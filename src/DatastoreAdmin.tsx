@@ -177,7 +177,16 @@ function DatastoreAdminView({ project }: { project: string }) {
             {({ entityKey }) => <EntityPage entityKey={entityKey} />}
           </Route>
           <Route path="/">
-            <Redirect to={`/kinds/${kinds[0]}`} />
+            {() => {
+              if (kinds.length === 0) {
+                return (
+                  <ErrorMessage
+                    error={"No data found. Did you use the correct project ID?"}
+                  />
+                );
+              }
+              return <Redirect to={`/kinds/${kinds[0]}`} />;
+            }}
           </Route>
         </Switch>
       </div>
