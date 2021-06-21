@@ -148,14 +148,30 @@ export function useEntities(kind: string, pageSize: number, page?: number) {
   return useQuery<Entity[], Error>(
     ["kinds", kind, "entities", [{ page, pageSize }]],
     async () => {
-      const r = await runQuery(project, {
-        query: {
-          kind: [{ name: kind }],
-          limit: pageSize,
-          offset: (page ?? 0) * pageSize,
-        },
-      });
-      return (r.batch.entityResults || []).map((e: any) => e.entity);
+      const result: Entity[] = [];
+      let offset = (page ?? 0) * pageSize;
+      let limit = pageSize;
+      let startCursor = null;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const r: any = await runQuery(project, {
+          query: {
+            kind: [{ name: kind }],
+            limit,
+            offset,
+            ...(startCursor != null ? { startCursor } : {}),
+          },
+        });
+        const batchResults = r.batch.entityResults || [];
+        result.push(...batchResults.map((e: any) => e.entity));
+        if (r.batch.moreResults !== "NOT_FINISHED") {
+          break;
+        }
+        offset = offset - r.batch.skippedResults;
+        limit = limit - batchResults.length;
+        startCursor = r.batch.endCursor;
+      }
+      return result;
     },
     { keepPreviousData: true },
   );
