@@ -1,25 +1,30 @@
 # DSAdmin: Google Cloud Datastore Emulator Admin UI
 
-Provides an admin UI for the Google Cloud Datastore Emulator.
+Admin UI for the Google Cloud Datastore Emulator.
 
 - Supports browsing, deleting, querying (using GQL), import, export, ...
+- Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
 - Hackable: Implemented entirely in the frontend as an SPA of only 1000 lines of code. 
   Uses the [Datastore REST API](https://cloud.google.com/datastore/docs/reference/data/rest) directly from
-  the frontend. The only thing a server is used for is for proxying to the datastore emulator 
-  (to avoid CORS problems), and to serve the HTML and JS files. 
+  the frontend. 
+- Portable: The only thing a server is used for is for proxying to the datastore emulator 
+  (to avoid CORS problems), and to serve the HTML and JS files. This means that the
+  server (written in Node.JS) can easily be ported to other languages if you want
+  to avoid a dependency on Node.JS.
 
 
 ## Why?
 
-Since Google stopped shipping an admin interface for their Datastore Emulator, there have been some
-external projects trying to fill the gap. However, all of the ones I tried were either partially or completely
-broken, lacked in core features, were painful to set up, or had dependencies that prevented them 
-from e.g. being installed in a non-x86 Docker image.
+Since Google stopped shipping an admin interface for their Datastore Emulator,
+there have been some external projects trying to fill the gap. However, all of
+the ones I tried were either partially or completely broken, lacked in core
+features, had performance issues, were painful to set up, or had dependencies
+that prevented them from e.g. being installed in a non-x86 Docker image.
 
-This project tries to fix all of the issues with the other Datastore admin interfaces, and even
-improve on the original Google interface in some areas.
+This project tries to fix all of the issues with the other Datastore admin
+interfaces, and even improve on the original Google interface in some areas.
 
 
 ## Not yet implemented
