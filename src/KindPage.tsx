@@ -45,7 +45,7 @@ function KindSelector({ value }: { value: string }) {
 
 function KindTable({ kind, page }: { kind: string; page: number }) {
   const [, setLocation] = useLocation();
-  const { data, error } = useEntities(kind, pageSize, page);
+  const { data, error, isPreviousData } = useEntities(kind, pageSize, page);
 
   const onPrevious = React.useCallback(() => {
     setLocation(`/kinds/${kind}/${page - 1}`);
@@ -59,13 +59,20 @@ function KindTable({ kind, page }: { kind: string; page: number }) {
   }
 
   return (
-    <EntitiesTable
-      entities={data}
-      onNext={onNext}
-      onPrevious={onPrevious}
-      haveNext={data.length >= pageSize}
-      havePrevious={page > 0}
-    />
+    <>
+      {isPreviousData ? (
+        <div className="position-absolute bottom-50 end-50">
+          <Loading />
+        </div>
+      ) : null}
+      <EntitiesTable
+        entities={data}
+        onNext={onNext}
+        onPrevious={onPrevious}
+        haveNext={data.length >= pageSize}
+        havePrevious={page > 0}
+      />
+    </>
   );
 }
 
