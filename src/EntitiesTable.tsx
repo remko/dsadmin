@@ -98,10 +98,6 @@ function EntitiesTable({
     [propertyNames],
   );
 
-  if (entities.length == 0) {
-    return <div className="text-muted">No results</div>;
-  }
-
   return (
     <Table
       className="table table-striped"
