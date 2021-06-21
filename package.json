@@ -1,6 +1,6 @@
 {
   "name": "dsadmin",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
@@ -47,5 +47,12 @@
     "bin/dsadmin.js"
   ],
   "bin": "./bin/dsadmin.js",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "google",
+    "cloud",
+    "datastore",
+    "emulator",
+    "gui"
+  ]
 }

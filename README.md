@@ -1,6 +1,6 @@
 # DSAdmin: Google Cloud Datastore Emulator Admin UI
 
-Admin UI for the Google Cloud Datastore Emulator.
+Administration GUI for the Google Cloud Datastore Emulator.
 
 - Supports browsing, deleting, querying (using GQL), import, export, ...
 - Supports large databases
