@@ -41,6 +41,8 @@ Create an issue in the tracker if you want one of these features urgently.
 
 ## Usage
 
+### Using NPM
+
 Using the environment from the emulator:
 
     eval $(gcloud beta emulators datastore env-init --data-dir=DATA-DIR)
@@ -49,6 +51,11 @@ Using the environment from the emulator:
 Using command-line arguments:
 
     npx dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:7081
+
+### Using Docker
+
+    docker run -p 8080:8080 remko/dsadmin \
+      --project=my-project --datastore-emulator-host=host.docker.internal:7081
 
 
 ## Development
