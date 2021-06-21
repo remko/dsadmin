@@ -1,0 +1,16 @@
+.form-label {
+  font-weight: bold;
+}
+
+.col-form-label {
+  font-weight: bold;
+}
+
+.bi {
+  display: inline-block;
+  vertical-align:-.125em
+}
+
+html {
+  font-size: 12px;
+}
