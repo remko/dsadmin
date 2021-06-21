@@ -200,6 +200,9 @@ export function useEntity(key: Key) {
     const r = await lookup(project, {
       keys: [key],
     });
+    if ((r.found || []).length === 0) {
+      throw { message: "entity not found" };
+    }
     return r.found[0].entity;
   });
 }
