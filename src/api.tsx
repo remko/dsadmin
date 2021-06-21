@@ -129,6 +129,20 @@ async function export_(project: string, req: any) {
 // React-Query wrappers
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+/*export function useNamespaces() {
+  const { project } = React.useContext(APIContext)!;
+  return useQuery<string[], Error>("namespaces", async () => {
+    const r = await runQuery(project, {
+      query: {
+        kind: [{ name: "__namespace__" }],
+      },
+    });
+    return (r.batch.entityResults || []).map(
+      (e: any) => e.entity.key.path[0].id,
+    );
+  });
+}*/
+
 export function useKinds() {
   const { project } = React.useContext(APIContext)!;
   return useQuery<string[], Error>("kinds", async () => {
