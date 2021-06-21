@@ -173,7 +173,7 @@ export function useEntities(kind: string, pageSize: number, page?: number) {
       }
       return result;
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, staleTime: 3600 * 1000 },
   );
 }
 
