@@ -2,3 +2,5 @@
 .snowpack
 build
 node_modules
+emulator-data
+yarn-error.log

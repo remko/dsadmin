@@ -6,7 +6,8 @@
     "build": "snowpack build",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
-    "prepare": "snowpack build"
+    "prepare": "snowpack build",
+    "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:7080 --data-dir=emulator-data"
   },
   "repository": "github:remko/dsadmin",
   "dependencies": {
@@ -35,6 +36,7 @@
     "@types/yargs": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
+    "axios": "^0.21.1",
     "eslint": "^7.29.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",

@@ -50,6 +50,6 @@ export default {
   devOptions: {},
   buildOptions: {},
   env: {
-    DATASTORE_PROJECT_ID: process.env.DATASTORE_PROJECT_ID,
+    DATASTORE_PROJECT_ID: process.env.DATASTORE_PROJECT_ID || "dsadmin-dev",
   },
 };
