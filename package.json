@@ -5,7 +5,7 @@
     "start": "snowpack dev",
     "build": "snowpack build",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
-    "lint": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "prettier --loglevel warn --check \"src/**/*.{js,jsx,ts,tsx}\" && tsc --noEmit && eslint .",
     "prepare": "snowpack build",
     "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:7080 --data-dir=emulator-data"
   },

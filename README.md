@@ -30,10 +30,10 @@ interfaces, and even improve on the original Google interface in some areas.
 ## Not yet implemented
 
 - Editing (Coming soon)
-- Namespace support
-- Sorting & filtering from the browser
-- Creating new entities
 - Adding/removing properties to entities
+- Creating new entities
+- Nested entity editing
+- Sorting & filtering from the browser
 
 Neither of these are particularly difficult, but I just haven't needed them yet.
 Create an issue in the tracker if you want one of these features urgently.

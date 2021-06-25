@@ -4,18 +4,25 @@ import { useEntities, useKinds } from "./api";
 import EntitiesTable from "./EntitiesTable";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
+import { namespacedLocation } from "./locations";
 
 const pageSize = 25;
 
-function KindSelector({ value }: { value: string }) {
-  const { data: kinds, error } = useKinds();
+function KindSelector({
+  value,
+  namespace,
+}: {
+  value: string;
+  namespace: string | null;
+}) {
+  const { data: kinds, error } = useKinds(namespace);
   const [, setLocation] = useLocation();
 
   const onLocationChange = React.useCallback(
     (ev) => {
-      setLocation(`/kinds/${ev.target.value}`);
+      setLocation(namespacedLocation(`/kinds/${ev.target.value}`, namespace));
     },
-    [setLocation],
+    [namespace, setLocation],
   );
 
   if (kinds == null) {
@@ -43,9 +50,22 @@ function KindSelector({ value }: { value: string }) {
   );
 }
 
-function KindTable({ kind, page }: { kind: string; page: number }) {
+function KindTable({
+  kind,
+  namespace,
+  page,
+}: {
+  kind: string;
+  namespace: string | null;
+  page: number;
+}) {
   const [, setLocation] = useLocation();
-  const { data, error, isPreviousData } = useEntities(kind, pageSize, page);
+  const { data, error, isPreviousData } = useEntities(
+    kind,
+    namespace,
+    pageSize,
+    page,
+  );
 
   const onPrevious = React.useCallback(() => {
     setLocation(`/kinds/${kind}/${page - 1}`);
@@ -76,11 +96,19 @@ function KindTable({ kind, page }: { kind: string; page: number }) {
   );
 }
 
-function KindPage({ kind, page }: { kind: string; page: number }) {
+function KindPage({
+  kind,
+  namespace,
+  page,
+}: {
+  kind: string;
+  namespace: string | null;
+  page: number;
+}) {
   return (
     <div>
-      <KindSelector value={kind} />
-      <KindTable kind={kind} page={page} />
+      <KindSelector value={kind} namespace={namespace} />
+      <KindTable kind={kind} namespace={namespace} page={page} />
     </div>
   );
 }

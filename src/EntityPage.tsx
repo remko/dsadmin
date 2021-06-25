@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
-import { useEntity, decodeKey, keyToString } from "./api";
+import { useEntity, decodeKey, keyToString, keyNamespace } from "./api";
+import { namespacedLocation } from "./locations";
 import { PropertyValueView, truncate } from "./properties";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
@@ -22,7 +23,11 @@ export default function EntityPage({
     <div>
       <ol className="breadcrumb">
         <li className="breadcrumb-item">
-          <Link href={`/kinds/${lkey.kind}`}>{lkey.kind}</Link>
+          <Link
+            href={namespacedLocation(`/kinds/${lkey.kind}`, keyNamespace(key))}
+          >
+            {lkey.kind}
+          </Link>
         </li>
         <li className="breadcrumb-item active" aria-current="page">
           {truncate(keyToString(data.key), 80)}

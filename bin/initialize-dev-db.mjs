@@ -179,11 +179,33 @@ await call("commit", {
             projectId: projectID,
             namespaceId: "myNamespace",
           },
-          path: [{ kind: "Kind", name: "EntityWithSingleProperty" }],
+          path: [{ kind: "KindInNamespace", name: "EntityWithSingleProperty" }],
         },
         properties: {
           integerProp: {
             integerValue: 14,
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+            namespaceId: "myNamespace",
+          },
+          path: [{ kind: "Kind", name: "EntityInNamespace" }],
+        },
+        properties: {
+          integerProp: {
+            integerValue: 32,
           },
         },
       },

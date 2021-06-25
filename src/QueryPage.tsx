@@ -6,7 +6,7 @@ import Loading from "./ui/Loading";
 import * as qs from "querystringify";
 import { useLocation } from "wouter";
 
-export default function QueryPage() {
+export default function QueryPage({ namespace }: { namespace: string | null }) {
   const q = qs.parse(window.location.search) as Record<string, string>;
   const currentQuery = q.q || "";
   const [query, setQuery] = React.useState(currentQuery);
@@ -17,7 +17,11 @@ export default function QueryPage() {
     setQuery(ev.target.value);
   }, []);
 
-  const { data: queryResults, error, isLoading } = useGQLQuery(currentQuery);
+  const {
+    data: queryResults,
+    error,
+    isLoading,
+  } = useGQLQuery(currentQuery, namespace);
 
   const runQuery = React.useCallback(
     (ev) => {

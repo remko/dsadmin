@@ -118,11 +118,15 @@ async function export_(project: string, req: any) {
   return callAPI<any, any>(project, "export", req);
 }
 
+function partitionID(namespace: string | null) {
+  return namespace == null ? {} : { partitionId: { namespaceId: namespace } };
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // React-Query wrappers
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-/*export function useNamespaces() {
+export function useNamespaces() {
   const { project } = React.useContext(APIContext)!;
   return useQuery<string[], Error>("namespaces", async () => {
     const r = await runQuery(project, {
@@ -131,29 +135,38 @@ async function export_(project: string, req: any) {
       },
     });
     return (r.batch.entityResults || []).map(
-      (e: any) => e.entity.key.path[0].id,
-    );
-  });
-}*/
-
-export function useKinds() {
-  const { project } = React.useContext(APIContext)!;
-  return useQuery<string[], Error>("kinds", async () => {
-    const r = await runQuery(project, {
-      query: {
-        kind: [{ name: "__kind__" }],
-      },
-    });
-    return (r.batch.entityResults || []).map(
-      (e: any) => e.entity.key.path[0].name,
+      (e: any) => e.entity.key.path[0].name || null,
     );
   });
 }
 
-export function useEntities(kind: string, pageSize: number, page?: number) {
+export function useKinds(namespace: string | null) {
+  const { project } = React.useContext(APIContext)!;
+  return useQuery<string[], Error>(
+    ["namespaces", namespace, "kinds"],
+    async () => {
+      const r = await runQuery(project, {
+        ...partitionID(namespace),
+        query: {
+          kind: [{ name: "__kind__" }],
+        },
+      });
+      return (r.batch.entityResults || []).map(
+        (e: any) => e.entity.key.path[0].name,
+      );
+    },
+  );
+}
+
+export function useEntities(
+  kind: string,
+  namespace: string | null,
+  pageSize: number,
+  page?: number,
+) {
   const { project } = React.useContext(APIContext)!;
   return useQuery<Entity[], Error>(
-    ["kinds", kind, "entities", [{ page, pageSize }]],
+    ["namespaces", namespace, "kinds", kind, "entities", [{ page, pageSize }]],
     async () => {
       const result: Entity[] = [];
       let offset = (page ?? 0) * pageSize;
@@ -162,6 +175,7 @@ export function useEntities(kind: string, pageSize: number, page?: number) {
       // eslint-disable-next-line no-constant-condition
       while (true) {
         const r: any = await runQuery(project, {
+          ...partitionID(namespace),
           query: {
             kind: [{ name: kind }],
             limit,
@@ -184,12 +198,13 @@ export function useEntities(kind: string, pageSize: number, page?: number) {
   );
 }
 
-export function useGQLQuery(query: string) {
+export function useGQLQuery(query: string, namespace: string | null) {
   const { project } = React.useContext(APIContext)!;
   return useQuery<Entity[], Error>(
-    ["queries", query],
+    ["namespaces", namespace, "queries", query],
     async () => {
       const r = await runQuery(project, {
+        ...partitionID(namespace),
         gqlQuery: {
           queryString: query,
           allowLiterals: true,
@@ -229,8 +244,10 @@ export function useDeleteEntities() {
       onSuccess: (data, { keys }) => {
         for (const key of keys) {
           queryClient.invalidateQueries([
+            "namespaces",
+            keyNamespace(key),
             "kinds",
-            key.path[key.path.length - 1].kind,
+            keyKind(key),
             "entities",
           ]);
         }
@@ -273,6 +290,14 @@ export function useImport() {
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Utility
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+export function keyKind(key: Key) {
+  return key.path[key.path.length - 1].kind;
+}
+
+export function keyNamespace(key: Key) {
+  return key.partitionId.namespaceId || null;
+}
 
 export function keyToLocalString(key: Key) {
   const p = key.path[0];
