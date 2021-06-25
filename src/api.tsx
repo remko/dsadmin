@@ -19,49 +19,42 @@ export type Key = {
   }>;
 };
 
-type StringPropertyValue = {
-  stringValue: string;
-};
-
-type TimestampPropertyValue = {
-  timestampValue: string;
-};
-
-type KeyPropertyValue = {
-  keyValue: Key;
-};
-
-type NullPropertyValue = {
-  nullValue: never;
-};
-
-type BooleanPropertyValue = {
-  booleanValue: boolean;
-};
-
-type ArrayValue = {
-  arrayValue: {
-    values?: PropertyValue[];
-  };
-};
-
-type IntegerValue = {
-  integerValue: string;
-};
-
-type BlobValue = {
-  blobValue: string;
-};
-
 export type PropertyValue =
-  | TimestampPropertyValue
-  | StringPropertyValue
-  | KeyPropertyValue
-  | NullPropertyValue
-  | BooleanPropertyValue
-  | ArrayValue
-  | IntegerValue
-  | BlobValue;
+  | {
+      nullValue: never;
+    }
+  | {
+      booleanValue: boolean;
+    }
+  | {
+      integerValue: string;
+    }
+  | {
+      doubleValue: number;
+    }
+  | {
+      timestampValue: string;
+    }
+  | {
+      keyValue: Key;
+    }
+  | {
+      stringValue: string;
+    }
+  | {
+      blobValue: string;
+    }
+  | {
+      geoPointValue: {
+        latitude: number;
+        longitude: number;
+      };
+    }
+  | {
+      arrayValue: {
+        values?: PropertyValue[];
+      };
+    };
 
 export type Entity = {
   key: Key;

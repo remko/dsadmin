@@ -54,6 +54,14 @@ export function PropertyValueView({
     );
   } else if ("integerValue" in v) {
     return <React.Fragment>{v.integerValue}</React.Fragment>;
+  } else if ("doubleValue" in v) {
+    return <React.Fragment>{v.doubleValue}</React.Fragment>;
+  } else if ("geoPointValue" in v) {
+    return (
+      <React.Fragment>
+        lat: {v.geoPointValue.latitude}, lon: {v.geoPointValue.longitude}
+      </React.Fragment>
+    );
   } else if ("arrayValue" in v) {
     return (
       <React.Fragment>
