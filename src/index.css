@@ -14,3 +14,7 @@
 html {
   font-size: 12px;
 }
+
+.accordion-collapse.show {
+  background-color: #f0f0f0;
+}

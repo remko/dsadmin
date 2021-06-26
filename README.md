@@ -29,10 +29,11 @@ interfaces, and even improve on the original Google interface in some areas.
 
 ## Not yet implemented
 
-- Editing (Coming soon)
 - Adding/removing properties to entities
 - Creating new entities
-- Nested entity editing
+- Property editors:
+  - Nested entity
+  - Array
 - Sorting & filtering from the browser
 
 Neither of these are particularly difficult, but I just haven't needed them yet.

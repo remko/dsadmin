@@ -90,6 +90,7 @@ function KindTable({
         onNext={onNext}
         onPrevious={onPrevious}
         haveNext={data.length >= pageSize}
+        namespace={namespace}
         havePrevious={page > 0}
       />
     </>

@@ -48,7 +48,7 @@ await call("commit", {
               partitionId: {
                 projectId: projectID,
               },
-              path: [{ kind: "MyKind", name: "Entity" }],
+              path: [{ kind: "Kind", name: "Entity" }],
             },
           },
           stringProp: {
@@ -115,11 +115,14 @@ await call("commit", {
               partitionId: {
                 projectId: projectID,
               },
-              path: [{ kind: "MyKind", id: 1 }],
+              path: [{ kind: "Kind", id: 1 }],
             },
           },
           stringProp: {
-            stringValue: "My Other String",
+            stringValue: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dapibus tristique dictum. Fusce non pretium erat. In quis dignissim diam. In ornare varius neque sed pharetra. Vestibulum eleifend turpis suscipit felis consectetur dignissim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam interdum eu neque in euismod. Etiam viverra odio ut semper scelerisque. Vivamus luctus odio vitae leo hendrerit molestie. Nulla congue est a magna tempor, eget fringilla ante blandit. Cras lacinia quam sit amet augue volutpat, vitae viverra eros lobortis. Fusce mi nibh, sagittis eu pharetra vel, bibendum at augue. Praesent elementum sed ipsum et pharetra. Duis eget lectus tellus. Suspendisse arcu enim, ultrices in ullamcorper condimentum, consectetur ac felis. Aliquam sed arcu non tortor consectetur malesuada.
+
+Nam in ultrices est. Praesent molestie gravida est et aliquet. Nullam tempus magna eu lectus condimentum ultrices. Curabitur eros arcu, volutpat consectetur cursus ac, faucibus eget velit. Phasellus luctus efficitur elit, sed blandit massa dictum non. Quisque vehicula dolor vitae mauris aliquam iaculis. Aliquam tincidunt lobortis tellus quis facilisis. Ut ultrices congue tincidunt. Duis tincidunt, orci ut viverra fringilla, eros tortor consequat velit, nec scelerisque sem purus eu nisi. Proin scelerisque magna lectus, sed blandit ipsum vestibulum a. Nam a pulvinar nunc, eu lacinia nibh. Sed at dui a diam tincidunt rhoncus eget id felis. Praesent id auctor sem.`,
+            excludeFromIndexes: true,
           },
           blobProp: {
             blobValue: "AAEK",
@@ -162,6 +165,61 @@ await call("commit", {
         properties: {
           integerProp: {
             integerValue: 14,
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
+          path: [{ kind: "Kind", name: "EntityWithExternalKeyLink" }],
+        },
+        properties: {
+          keyProp: {
+            keyValue: {
+              partitionId: {
+                projectId: "other-project",
+              },
+              path: [{ kind: "Kind", id: 1 }],
+            },
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
+          path: [{ kind: "Kind", name: "EntityWithNamespaceKeyLink" }],
+        },
+        properties: {
+          keyProp: {
+            keyValue: {
+              partitionId: {
+                projectId: projectID,
+                namespaceId: "myNamespace",
+              },
+              path: [
+                { kind: "KindInNamespace", name: "EntityWithSingleProperty" },
+              ],
+            },
           },
         },
       },

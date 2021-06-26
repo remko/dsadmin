@@ -19,42 +19,62 @@ export type Key = {
   }>;
 };
 
+export type NullPropertyValue = {
+  nullValue: null;
+};
+
+export type BooleanPropertyValue = {
+  booleanValue: boolean;
+};
+
+export type IntegerValue = {
+  integerValue: string;
+};
+
+export type DoubleValue = {
+  doubleValue: number;
+};
+
+export type StringPropertyValue = {
+  stringValue: string;
+};
+
+export type TimestampPropertyValue = {
+  timestampValue: string;
+};
+
+export type KeyPropertyValue = {
+  keyValue: Key;
+};
+
+export type ArrayValue = {
+  arrayValue: {
+    values?: PropertyValue[];
+  };
+};
+
+export type BlobValue = {
+  blobValue: string;
+};
+
+export type GeoPointValue = {
+  geoPointValue: {
+    latitude: number;
+    longitude: number;
+  };
+};
+
 export type PropertyValue =
-  | {
-      nullValue: never;
-    }
-  | {
-      booleanValue: boolean;
-    }
-  | {
-      integerValue: string;
-    }
-  | {
-      doubleValue: number;
-    }
-  | {
-      timestampValue: string;
-    }
-  | {
-      keyValue: Key;
-    }
-  | {
-      stringValue: string;
-    }
-  | {
-      blobValue: string;
-    }
-  | {
-      geoPointValue: {
-        latitude: number;
-        longitude: number;
-      };
-    }
-  | {
-      arrayValue: {
-        values?: PropertyValue[];
-      };
-    };
+  | NullPropertyValue
+  | BooleanPropertyValue
+  | IntegerValue
+  | DoubleValue
+  | TimestampPropertyValue
+  | KeyPropertyValue
+  | StringPropertyValue
+  | BlobValue
+  | GeoPointValue
+  | ArrayValue;
 
 export type Entity = {
   key: Key;
@@ -73,6 +93,11 @@ export function APIProvider({
   return (
     <APIContext.Provider value={{ project }}>{children}</APIContext.Provider>
   );
+}
+
+export function useProject() {
+  const { project } = React.useContext(APIContext)!;
+  return project;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +254,40 @@ export function useEntity(key: Key) {
   });
 }
 
+export function useUpdateEntity() {
+  const queryClient = useQueryClient();
+  const { project } = React.useContext(APIContext)!;
+  return useMutation<Entity, Error, { entity: Entity }>(
+    async ({ entity }) => {
+      const r = await commit(project, {
+        mode: "NON_TRANSACTIONAL",
+        mutations: [
+          {
+            update: entity,
+          },
+        ],
+      });
+      return {
+        ...entity,
+        key: r.mutationResults[0].key,
+      };
+    },
+    {
+      onSuccess: (data, { entity }) => {
+        queryClient.invalidateQueries([
+          "namespaces",
+          keyNamespace(entity.key),
+          "kinds",
+          keyKind(entity.key),
+          "entities",
+        ]);
+        queryClient.invalidateQueries(["queries"]);
+        queryClient.setQueryData(["entities", entity.key], entity);
+      },
+    },
+  );
+}
+
 export function useDeleteEntities() {
   const queryClient = useQueryClient();
   const { project } = React.useContext(APIContext)!;
@@ -306,15 +365,6 @@ export function keyToLocalString(key: Key) {
   } else {
     return p.id!;
   }
-}
-
-export function keyToString(key: Key) {
-  return key.path
-    .map((p) => {
-      const id = p.name != null ? `"${p.name}"` : p.id;
-      return `${p.kind}:${id}`;
-    })
-    .join("/");
 }
 
 export function encodeKey(key: Key) {

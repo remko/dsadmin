@@ -47,12 +47,14 @@ function EntitiesTable({
   onPrevious,
   haveNext,
   havePrevious,
+  namespace,
 }: {
   entities: Entity[];
   haveNext?: boolean;
   havePrevious?: boolean;
   onNext?: () => void;
   onPrevious?: () => void;
+  namespace: string | null;
 }) {
   const propertyNames = React.useMemo(
     () =>
@@ -89,13 +91,17 @@ function EntitiesTable({
                 return value == null ? (
                   <span className="text-muted">undefined</span>
                 ) : (
-                  <PropertyValueView value={value} isShort={true} />
+                  <PropertyValueView
+                    value={value}
+                    isShort={true}
+                    namespace={namespace}
+                  />
                 );
               },
             } as any),
         ),
       ),
-    [propertyNames],
+    [namespace, propertyNames],
   );
 
   return (
