@@ -2,7 +2,7 @@
 
 Administration GUI for the Google Cloud Datastore Emulator.
 
-- Supports browsing, deleting, querying (using GQL), import, export, ...
+- Supports browsing, editing, deleting, querying (using GQL), import, export, ...
 - Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
