@@ -18,9 +18,12 @@ import PropertyValueEdit, {
   toEditProperties,
   editValueToString,
   valueFromEditValue,
+  newEditValue,
 } from "./PropertyValueEdit";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
 import { keyToString, decodeKey } from "./keys";
+import TrashIcon from "./ui/icons/trash";
+import PlusIcon from "./ui/icons/plus";
 
 export default function EntityPage({
   entityKey: encodedKey,
@@ -42,7 +45,10 @@ export default function EntityPage({
   const [editingProperty, setEditingProperty] = React.useState<string | null>(
     null,
   );
-  const [editProperties, setEditProperties] = React.useState(
+  const [editProperties, setEditProperties] = React.useState<Record<
+    string,
+    PropertyEditValue | null
+  > | null>(
     savedEntity == null
       ? null
       : toEditProperties(
@@ -114,19 +120,60 @@ export default function EntityPage({
     );
   }, [key, resetUpdate, savedEntity]);
 
-  const save = React.useCallback(() => {
+  const save = React.useCallback(async () => {
     if (editEntity == null) {
       return;
     }
     resetUpdate();
     setEditingProperty(null);
-    updateEntity({ entity: editEntity });
-  }, [editEntity, resetUpdate, updateEntity]);
+    const newSavedEntity = await updateEntity({ entity: editEntity });
+    setEditProperties(
+      toEditProperties(
+        newSavedEntity.properties,
+        key.partitionId.projectId,
+        keyNamespace(key),
+      ),
+    );
+  }, [editEntity, key, resetUpdate, updateEntity]);
+
+  const deleteProperty = React.useCallback(
+    (property: string, ev: React.MouseEvent<HTMLAnchorElement>) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (
+        !window.confirm(
+          `Are you sure you want to delete property '${property}'?`,
+        )
+      ) {
+        return;
+      }
+      setEditingProperty(null);
+      setEditProperties((v) => ({
+        ...v,
+        [property]: null,
+      }));
+    },
+    [],
+  );
+
+  const addProperty = React.useCallback(() => {
+    const name = window.prompt("Enter the name of the property to add");
+    if (name == null) {
+      return;
+    }
+    setEditProperties((v) => ({
+      ...v,
+      [name]: newEditValue(),
+    }));
+  }, []);
 
   const hasUnsaved = React.useMemo(
     () =>
-      Object.entries(editEntity?.properties || []).some(
-        ([p, v]) => !isValueEqual(v, (savedEntity?.properties ?? {})[p]),
+      Object.keys(editEntity?.properties ?? {}).length !==
+        Object.keys(savedEntity?.properties ?? {}).length ||
+      Object.entries(editEntity?.properties || {}).some(
+        ([p, v]) =>
+          v == null || !isValueEqual(v, (savedEntity?.properties ?? {})[p]),
       ),
     [savedEntity, editEntity],
   );
@@ -167,18 +214,30 @@ export default function EntityPage({
           </div>
         )}
       </form>
-      <h2 className="mb-3">Properties</h2>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>Properties</h2>
+        <button
+          className="btn btn-sm btn-outline-secondary"
+          onClick={addProperty}
+        >
+          <PlusIcon />
+        </button>
+      </div>
       <div className="accordion mb-3">
         {Object.entries(editProperties || []).map(([name, editValue]) => {
-          const value = valueFromEditValue(
-            editValue,
-            key.partitionId.projectId,
-            keyNamespace(key),
-          );
+          const value =
+            editValue != null
+              ? valueFromEditValue(
+                  editValue,
+                  key.partitionId.projectId,
+                  keyNamespace(key),
+                )
+              : null;
           return (
             <div key={name} className="accordion-item">
               <h2 className="accordion-header">
                 <button
+                  disabled={editValue == null}
                   className={classNames(
                     "accordion-button justify-content-between",
                     name !== editingProperty && "collapsed",
@@ -190,11 +249,12 @@ export default function EntityPage({
                     <span
                       className={classNames(
                         name === editingProperty && "fw-bold",
+                        editValue == null && "text-muted",
                       )}
                     >
                       {name}
                     </span>
-                    {name !== editingProperty ? (
+                    {editValue != null && name !== editingProperty ? (
                       <span className="text-muted text-truncate ms-3">
                         {editValueToString(
                           editValue,
@@ -204,12 +264,23 @@ export default function EntityPage({
                       </span>
                     ) : null}
                   </div>
-                  {value == null ? (
+                  {editValue == null ? (
+                    <div className="text-muted me-2">(Deleted)</div>
+                  ) : value == null ? (
                     <div className="text-danger me-2">
                       <ExclamationCircle />
                     </div>
                   ) : !isValueEqual(value, savedEntity.properties[name]) ? (
                     <div className="text-muted me-2">(Not saved)</div>
+                  ) : null}
+                  {name === editingProperty ? (
+                    <a
+                      role="button"
+                      className="btn btn-sm py-0 px-1 me-2"
+                      onClick={deleteProperty.bind(null, name)}
+                    >
+                      <TrashIcon height={12} width={12} />
+                    </a>
                   ) : null}
                 </button>
               </h2>
@@ -219,7 +290,7 @@ export default function EntityPage({
                   name === editingProperty && "show",
                 )}
               >
-                {name === editingProperty ? (
+                {editValue != null && name === editingProperty ? (
                   <div className="accordion-body">
                     <PropertyValueEdit
                       value={editValue}

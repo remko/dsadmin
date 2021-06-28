@@ -68,6 +68,10 @@ export function editValueToString(
   }
 }
 
+export function newEditValue() {
+  return { ...EMPTY_VALUE, type: ValueType.Null };
+}
+
 function valueToEditValue(
   v: PropertyValue,
   project: string,
@@ -201,12 +205,15 @@ export function toEditProperties(
 }
 
 export function fromEditProperties(
-  properties: Record<string, PropertyEditValue>,
+  properties: Record<string, PropertyEditValue | null>,
   project: string,
   namespace: string | null,
 ): Record<string, PropertyValue> | null {
   const result: Record<string, PropertyValue> = {};
   for (const [name, value] of Object.entries(properties)) {
+    if (value == null) {
+      continue;
+    }
     const v = valueFromEditValue(value, project, namespace);
     if (v == null) {
       return null;

@@ -29,7 +29,6 @@ interfaces, and even improve on the original Google interface in some areas.
 
 ## Not yet implemented
 
-- Adding/removing properties to entities
 - Creating new entities
 - Property editors:
   - Nested entity

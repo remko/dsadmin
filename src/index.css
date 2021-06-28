@@ -18,3 +18,7 @@ html {
 .accordion-collapse.show {
   background-color: #f0f0f0;
 }
+
+.accordion-button[disabled]::after {
+  background: none;
+}

@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "wouter";
 import { PropertyValue, useProject } from "./api";
 import { encodeKey, keyToString } from "./keys";
-import { valueToString } from "./properties";
+import { truncate, valueToString } from "./properties";
 
 export function PropertyValueView({
   value: v,
@@ -16,7 +16,14 @@ export function PropertyValueView({
 }) {
   const project = useProject();
   if ("keyValue" in v) {
-    const text = keyToString(v.keyValue, project, namespace);
+    let text: string | JSX.Element = keyToString(
+      v.keyValue,
+      project,
+      namespace,
+    );
+    if (isShort) {
+      text = truncate(text, 20);
+    }
     return project === v.keyValue.partitionId.projectId ? (
       <Link
         className={classNames(isShort && "text-truncate")}
