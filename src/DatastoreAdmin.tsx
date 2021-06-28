@@ -3,7 +3,8 @@ import { APIProvider, useExport, useImport } from "./api";
 import ErrorMessage from "./ui/ErrorMessage";
 import ScrollToTop from "./ui/ScrollToTop";
 import Loading from "./ui/Loading";
-import { Link, Route, Switch, useLocation, useRoute } from "wouter";
+import { Link, Route, Switch, useLocation, useRoute, Router } from "wouter";
+import makeCachedMatcher from "wouter/matcher";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import classNames from "classnames";
@@ -14,6 +15,7 @@ import HomePage from "./HomePage";
 import NamespaceSelector from "./NamespaceSelector";
 import { namespacedLocation, namespaceForLocation } from "./locations";
 import DatastoreIcon from "./ui/icons/datastore";
+import { pathToRegexp, Key as PTRKey } from "path-to-regexp";
 
 function DatastoreAdminView({ project }: { project: string }) {
   const { mutateAsync: export_, isLoading: isExportLoading } = useExport();
@@ -59,8 +61,7 @@ function DatastoreAdminView({ project }: { project: string }) {
     [export_],
   );
 
-  const [isQueryRoute] = useRoute("/query");
-  const [isNamespaceQueryRoute] = useRoute("/namespaces/:namespace/query");
+  const [isQueryRoute] = useRoute("{/namespaces/:namespace}?/query");
 
   const isLoading = isExportLoading ?? isImportLoading;
 
@@ -77,10 +78,7 @@ function DatastoreAdminView({ project }: { project: string }) {
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <Link
-                className={classNames(
-                  "nav-link",
-                  !isQueryRoute && !isNamespaceQueryRoute && "active",
-                )}
+                className={classNames("nav-link", !isQueryRoute && "active")}
                 href={namespacedLocation("/", namespace)}
               >
                 Browse
@@ -88,10 +86,7 @@ function DatastoreAdminView({ project }: { project: string }) {
             </li>
             <li className="nav-item">
               <Link
-                className={classNames(
-                  "nav-link",
-                  (isQueryRoute || isNamespaceQueryRoute) && "active",
-                )}
+                className={classNames("nav-link", isQueryRoute && "active")}
                 href={namespacedLocation("/query", namespace)}
               >
                 Query
@@ -131,46 +126,28 @@ function DatastoreAdminView({ project }: { project: string }) {
       <div className="container mt-3 mb-3">
         {isLoading ? <Loading /> : null}
         <Switch>
-          <Route path="/kinds/:kind">
-            {({ kind }) => <KindPage kind={kind} page={0} namespace={null} />}
-          </Route>
-          <Route path="/kinds/:kind/:page">
-            {({ kind, page }) => (
-              <KindPage
-                kind={kind}
-                page={parseInt(page, 10)}
-                namespace={null}
-              />
-            )}
-          </Route>
-          <Route path="/namespaces/:namespace/kinds/:kind">
+          <Route path="{/namespaces/:namespace}?/kinds/:kind">
             {({ kind, namespace }) => (
-              <KindPage kind={kind} page={0} namespace={namespace} />
+              <KindPage kind={kind} page={0} namespace={namespace ?? null} />
             )}
           </Route>
-          <Route path="/namespaces/:namespace/kinds/:kind/:page">
+          <Route path="{/namespaces/:namespace}?/kinds/:kind/:page">
             {({ kind, namespace, page }) => (
               <KindPage
                 kind={kind}
                 page={parseInt(page, 10)}
-                namespace={namespace}
+                namespace={namespace ?? null}
               />
             )}
           </Route>
-          <Route path="/query">
-            <QueryPage namespace={null} />
-          </Route>
-          <Route path="/namespaces/:namespace/query">
-            {({ namespace }) => <QueryPage namespace={namespace} />}
+          <Route path="{/namespaces/:namespace}?/query">
+            {({ namespace }) => <QueryPage namespace={namespace ?? null} />}
           </Route>
           <Route path="/entities/:entityKey">
             {({ entityKey }) => <EntityPage entityKey={entityKey} />}
           </Route>
-          <Route path="/namespaces/:namespace">
-            {({ namespace }) => <HomePage namespace={namespace} />}
-          </Route>
-          <Route path="/">
-            <HomePage namespace={null} />
+          <Route path="{/namespaces/:namespace}?/">
+            {({ namespace }) => <HomePage namespace={namespace ?? null} />}
           </Route>
         </Switch>
       </div>
@@ -179,6 +156,12 @@ function DatastoreAdminView({ project }: { project: string }) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const routeMatcher = makeCachedMatcher((path) => {
+  const keys: PTRKey[] = [];
+  const regexp = pathToRegexp(path, keys, { strict: true });
+  return { keys, regexp };
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -195,7 +178,9 @@ function DatastoreAdmin({ project }: { project: string }) {
   return (
     <QueryClientProvider client={queryClient}>
       <APIProvider project={project}>
-        <DatastoreAdminView project={project} />
+        <Router matcher={routeMatcher}>
+          <DatastoreAdminView project={project} />
+        </Router>
         <ReactQueryDevtools position="bottom-right" />
       </APIProvider>
     </QueryClientProvider>

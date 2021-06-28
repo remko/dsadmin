@@ -29,7 +29,7 @@ export function PropertyValueView({
         className={classNames(isShort && "text-truncate")}
         href={`/entities/${encodeKey(v.keyValue)}`}
       >
-        {text}
+        <a>{text}</a>
       </Link>
     ) : (
       <span className={classNames(isShort && "text-truncate")}>{text}</span>

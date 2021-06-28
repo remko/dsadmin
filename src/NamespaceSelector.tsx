@@ -15,7 +15,7 @@ export default function NamespaceSelector({
   const onLocationChange = React.useCallback(
     (ev) => {
       setLocation(
-        ev.target.value == "~null~" ? `/` : `/namespaces/${ev.target.value}`,
+        ev.target.value == "~null~" ? `/` : `/namespaces/${ev.target.value}/`,
       );
     },
     [setLocation],
