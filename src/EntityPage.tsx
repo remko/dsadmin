@@ -256,11 +256,16 @@ export default function EntityPage({
                     </span>
                     {editValue != null && name !== editingProperty ? (
                       <span className="text-muted text-truncate ms-3">
-                        {editValueToString(
-                          editValue,
-                          project,
-                          keyNamespace(key),
-                        )}
+                        {
+                          /* FIXME: Try to remove truncate. */ truncate(
+                            editValueToString(
+                              editValue,
+                              project,
+                              keyNamespace(key),
+                            ),
+                            30,
+                          )
+                        }
                       </span>
                     ) : null}
                   </div>
