@@ -78,7 +78,7 @@ export type PropertyValue =
 
 export type Entity = {
   key: Key;
-  properties: Record<string, PropertyValue>;
+  properties?: Record<string, PropertyValue>;
 };
 
 const APIContext = React.createContext<{ project: string } | null>(null);
@@ -283,6 +283,46 @@ export function useUpdateEntity() {
         ]);
         queryClient.invalidateQueries(["queries"]);
         queryClient.setQueryData(["entities", entity.key], entity);
+      },
+    },
+  );
+}
+
+export function useCreateEntity() {
+  const queryClient = useQueryClient();
+  const { project } = React.useContext(APIContext)!;
+  return useMutation<Entity, Error, { key: Key }>(
+    async ({ key }) => {
+      const r = await commit(project, {
+        mode: "NON_TRANSACTIONAL",
+        mutations: [
+          {
+            insert: { key, properties: {} },
+          },
+        ],
+      });
+      return {
+        key: r.mutationResults[0].key ?? key,
+        properties: {},
+      };
+    },
+    {
+      onSuccess: (entity) => {
+        console.log("INvalidate", [
+          "namespaces",
+          keyNamespace(entity.key),
+          "kinds",
+          keyKind(entity.key),
+          "entities",
+        ]);
+        queryClient.invalidateQueries([
+          "namespaces",
+          keyNamespace(entity.key),
+          "kinds",
+          keyKind(entity.key),
+          "entities",
+        ]);
+        queryClient.invalidateQueries(["queries"]);
       },
     },
   );

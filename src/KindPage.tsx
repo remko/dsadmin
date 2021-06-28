@@ -1,10 +1,12 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { useEntities, useKinds } from "./api";
+import { Key, useCreateEntity, useEntities, useKinds, useProject } from "./api";
 import EntitiesTable from "./EntitiesTable";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
 import { namespacedLocation } from "./locations";
+import PlusIcon from "./ui/icons/plus";
+import { encodeKey } from "./keys";
 
 const pageSize = 25;
 
@@ -106,9 +108,52 @@ function KindPage({
   namespace: string | null;
   page: number;
 }) {
+  const project = useProject();
+
+  const [, setLocation] = useLocation();
+
+  const {
+    mutateAsync: createEntity,
+    error,
+    reset: resetCreateEntity,
+  } = useCreateEntity();
+
+  const addEntity = React.useCallback(async () => {
+    resetCreateEntity();
+    const id = window.prompt(
+      "Enter the name of the entity to add.\nLeave empty for an auto-generated numeric ID.",
+    );
+    if (id == null) {
+      return;
+    }
+    const key: Key = {
+      partitionId: {
+        projectId: project,
+        ...(namespace == null ? {} : { namespaceId: namespace }),
+      },
+      path: [],
+    };
+    if (id === "") {
+      key.path.push({ kind });
+    } else {
+      key.path.push({ kind, name: id });
+    }
+    const entity = await createEntity({ key });
+    setLocation(`/entities/${encodeKey(entity.key)}`);
+  }, [createEntity, kind, namespace, project, resetCreateEntity, setLocation]);
+
   return (
     <div>
-      <KindSelector value={kind} namespace={namespace} />
+      <div className="d-flex justify-content-between align-items-center">
+        <KindSelector value={kind} namespace={namespace} />
+        <button
+          className="btn btn-sm btn-outline-secondary"
+          onClick={addEntity}
+        >
+          <PlusIcon />
+        </button>
+      </div>
+      {error != null ? <ErrorMessage error={error} /> : null}
       <KindTable kind={kind} namespace={namespace} page={page} />
     </div>
   );

@@ -2,7 +2,7 @@
 
 Administration GUI for the Google Cloud Datastore Emulator.
 
-- Supports browsing, editing, deleting, querying (using GQL), import, export, ...
+- Supports browsing, editing, creating, deleting, querying (using GQL), import, export, ...
 - Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
@@ -29,14 +29,11 @@ interfaces, and even improve on the original Google interface in some areas.
 
 ## Not yet implemented
 
-- Creating new entities
+- Creating new entities with ancestor keys or new kinds
 - Property editors:
   - Nested entity
   - Array
 - Sorting & filtering from the browser
-
-Neither of these are particularly difficult, but I just haven't needed them yet.
-Create an issue in the tracker if you want one of these features urgently.
 
 
 ## Usage

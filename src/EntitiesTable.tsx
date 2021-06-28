@@ -81,7 +81,7 @@ function EntitiesTable({
             ({
               Header: p,
               id: p,
-              accessor: ({ properties }: Entity) => properties[p],
+              accessor: ({ properties }: Entity) => (properties ?? {})[p],
               Cell: ({ value }: { value?: PropertyValue }) => {
                 return value == null ? (
                   <span className="text-muted">undefined</span>

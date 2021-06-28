@@ -52,7 +52,7 @@ export default function EntityPage({
     savedEntity == null
       ? null
       : toEditProperties(
-          savedEntity.properties,
+          savedEntity.properties ?? {},
           key.partitionId.projectId,
           keyNamespace(key),
         ),
@@ -62,7 +62,7 @@ export default function EntityPage({
     if (editProperties == null && savedEntity != null) {
       setEditProperties(
         toEditProperties(
-          savedEntity.properties,
+          savedEntity.properties ?? {},
           key.partitionId.projectId,
           keyNamespace(key),
         ),
@@ -113,7 +113,7 @@ export default function EntityPage({
     setEditingProperty(null);
     setEditProperties(
       toEditProperties(
-        savedEntity.properties,
+        savedEntity.properties ?? {},
         key.partitionId.projectId,
         keyNamespace(key),
       ),
@@ -129,7 +129,7 @@ export default function EntityPage({
     const newSavedEntity = await updateEntity({ entity: editEntity });
     setEditProperties(
       toEditProperties(
-        newSavedEntity.properties,
+        newSavedEntity.properties ?? {},
         key.partitionId.projectId,
         keyNamespace(key),
       ),
@@ -270,7 +270,10 @@ export default function EntityPage({
                     <div className="text-danger me-2">
                       <ExclamationCircle />
                     </div>
-                  ) : !isValueEqual(value, savedEntity.properties[name]) ? (
+                  ) : !isValueEqual(
+                      value,
+                      (savedEntity.properties ?? {})[name],
+                    ) ? (
                     <div className="text-muted me-2">(Not saved)</div>
                   ) : null}
                   {name === editingProperty ? (
