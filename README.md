@@ -57,7 +57,15 @@ Using command-line arguments:
 
 ## Development
 
+Start a Datastore emulator:
+
+    npm run start-emulator
+    
 Start the development server:
+
+    npm start
+
+If you want to run against your own running instance of the Datastore emulator:
 
     eval $(gcloud beta emulators datastore env-init --data-dir=DATA-DIR)
     npm start
