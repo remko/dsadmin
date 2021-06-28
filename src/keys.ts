@@ -1,4 +1,4 @@
-import { Key as APIKey, keyNamespace } from "./api";
+import type { Key as APIKey } from "./api";
 
 export type Key = {
   project?: string;
@@ -253,7 +253,7 @@ export function keyToString(
   if (key.partitionId.projectId !== project) {
     result.push(`PROJECT('${key.partitionId.projectId}')`);
   }
-  if (keyNamespace(key) !== namespace) {
+  if (key.partitionId.namespaceId || null !== namespace) {
     result.push(`NAMESPACE('${key.partitionId.namespaceId || ""}')`);
   }
   for (const { kind, id, name } of key.path) {
