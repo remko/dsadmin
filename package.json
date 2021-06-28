@@ -7,8 +7,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "prettier --loglevel warn --check \"src/**/*.{js,jsx,ts,tsx}\" && tsc --noEmit && eslint .",
     "test": "jest",
+    "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:7080 --data-dir=emulator-data",
     "prepare": "snowpack build",
-    "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:7080 --data-dir=emulator-data"
+    "prepublishOnly": "npm run lint && npm run test"
   },
   "repository": "github:remko/dsadmin",
   "dependencies": {
