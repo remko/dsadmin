@@ -126,16 +126,11 @@ function DatastoreAdminView({ project }: { project: string }) {
       <div className="container mt-3 mb-3">
         {isLoading ? <Loading /> : null}
         <Switch>
-          <Route path="{/namespaces/:namespace}?/kinds/:kind">
-            {({ kind, namespace }) => (
-              <KindPage kind={kind} page={0} namespace={namespace ?? null} />
-            )}
-          </Route>
-          <Route path="{/namespaces/:namespace}?/kinds/:kind/:page">
+          <Route path="{/namespaces/:namespace}?/kinds/:kind{/:page}?">
             {({ kind, namespace, page }) => (
               <KindPage
                 kind={kind}
-                page={parseInt(page, 10)}
+                page={page == null ? 0 : parseInt(page, 10)}
                 namespace={namespace ?? null}
               />
             )}
