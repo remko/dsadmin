@@ -358,45 +358,11 @@ export function keyNamespace(key: Key) {
   return key.partitionId.namespaceId || null;
 }
 
-export function keyToLocalString(key: Key) {
+export function keyID(key: Key) {
   const p = key.path[0];
   if (p.name != null) {
     return `"${p.name}"`;
   } else {
     return p.id!;
   }
-}
-
-export function encodeKey(key: Key) {
-  const encodedKey: EncodedKey = [
-    key.partitionId.projectId,
-    key.partitionId.namespaceId || "",
-    key.path.map((p) => [
-      p.kind,
-      p.name != null ? p.name : parseInt(p.id!, 10),
-    ]),
-  ];
-  return btoa(JSON.stringify(encodedKey));
-}
-
-type EncodedKey = [
-  project: string,
-  namespace: string,
-  path: Array<[kind: string, id: number | string]>,
-];
-
-export function decodeKey(encoded: string): Key {
-  const [project, namespace, path] = JSON.parse(atob(encoded)) as EncodedKey;
-  return {
-    partitionId: {
-      projectId: project,
-      ...(namespace == "" ? {} : { namespaceId: namespace }),
-    },
-    path: path.map((p) => ({
-      kind: p[0],
-      ...(Number.isInteger(p[1])
-        ? { id: p[1] + "" }
-        : { name: p[1] as string }),
-    })),
-  };
 }

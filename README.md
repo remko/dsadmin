@@ -6,7 +6,7 @@ Administration GUI for the Google Cloud Datastore Emulator.
 - Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
-- Hackable: Implemented entirely in the frontend as an SPA of only 1000 lines of code. 
+- Hackable: Implemented entirely in the frontend as an SPA. 
   Uses the [Datastore REST API](https://cloud.google.com/datastore/docs/reference/data/rest) directly from
   the frontend. 
 - Portable: The only thing a server is used for is for proxying to the datastore emulator 

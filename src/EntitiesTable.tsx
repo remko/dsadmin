@@ -1,14 +1,9 @@
 import React from "react";
 import { Link } from "wouter";
-import {
-  encodeKey,
-  Entity,
-  Key,
-  keyToLocalString,
-  PropertyValue,
-  useDeleteEntities,
-} from "./api";
-import { PropertyValueView, truncate } from "./properties";
+import { Entity, Key, keyID, PropertyValue, useDeleteEntities } from "./api";
+import { encodeKey } from "./keys";
+import { truncate } from "./properties";
+import { PropertyValueView } from "./PropertyValueView";
 import Table from "./ui/Table";
 
 function EntitiesTableActions({ selectedRows }: { selectedRows: any }) {
@@ -76,7 +71,7 @@ function EntitiesTable({
           accessor: "key",
           Cell: ({ value }: { value: Key }) => (
             <Link href={`/entities/${encodeKey(value)}`}>
-              <a>{truncate(keyToLocalString(value), 20)}</a>
+              <a>{truncate(keyID(value), 20)}</a>
             </Link>
           ),
         },

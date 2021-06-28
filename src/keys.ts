@@ -1,4 +1,4 @@
-import type { Key as APIKey } from "./api";
+import { Key as APIKey, keyNamespace } from "./api";
 
 export type Key = {
   project?: string;
@@ -253,7 +253,7 @@ export function keyToString(
   if (key.partitionId.projectId !== project) {
     result.push(`PROJECT('${key.partitionId.projectId}')`);
   }
-  if ((key.partitionId.namespaceId || null) !== namespace) {
+  if (keyNamespace(key) !== namespace) {
     result.push(`NAMESPACE('${key.partitionId.namespaceId || ""}')`);
   }
   for (const { kind, id, name } of key.path) {
@@ -269,4 +269,42 @@ export function keyToString(
     }
   }
   return `key(${result.join(", ")})`;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Encoding
+////////////////////////////////////////////////////////////////////////////////////////////
+
+type EncodedKey = [
+  project: string,
+  namespace: string,
+  path: Array<[kind: string, id: number | string]>,
+];
+
+export function encodeKey(key: APIKey) {
+  const encodedKey: EncodedKey = [
+    key.partitionId.projectId,
+    key.partitionId.namespaceId || "",
+    key.path.map((p) => [
+      p.kind,
+      p.name != null ? p.name : parseInt(p.id!, 10),
+    ]),
+  ];
+  return btoa(JSON.stringify(encodedKey));
+}
+
+export function decodeKey(encoded: string): APIKey {
+  const [project, namespace, path] = JSON.parse(atob(encoded)) as EncodedKey;
+  return {
+    partitionId: {
+      projectId: project,
+      ...(namespace == "" ? {} : { namespaceId: namespace }),
+    },
+    path: path.map((p) => ({
+      kind: p[0],
+      ...(Number.isInteger(p[1])
+        ? { id: p[1] + "" }
+        : { name: p[1] as string }),
+    })),
+  };
 }

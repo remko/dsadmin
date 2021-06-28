@@ -1,4 +1,5 @@
-import { decodeKey, keyNamespace } from "./api";
+import { keyNamespace } from "./api";
+import { decodeKey } from "./keys";
 
 const namespaceRE = /^\/namespaces\/([^/]+)\/?/;
 const entitiesRE = /^\/entities\/([^/]+)\/?/;

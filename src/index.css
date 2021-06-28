@@ -1,3 +1,7 @@
+html {
+  font-size: 12px;
+}
+
 .form-label {
   font-weight: bold;
 }
@@ -8,11 +12,7 @@
 
 .bi {
   display: inline-block;
-  vertical-align:-.125em
-}
-
-html {
-  font-size: 12px;
+  vertical-align: -0.125em;
 }
 
 .accordion-collapse.show {

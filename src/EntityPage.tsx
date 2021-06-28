@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "wouter";
 import {
   useEntity,
-  decodeKey,
   keyNamespace,
   useUpdateEntity,
   Entity,
@@ -21,7 +20,7 @@ import PropertyValueEdit, {
   valueFromEditValue,
 } from "./PropertyValueEdit";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
-import { keyToString } from "./keys";
+import { keyToString, decodeKey } from "./keys";
 
 export default function EntityPage({
   entityKey: encodedKey,
@@ -49,7 +48,7 @@ export default function EntityPage({
       : toEditProperties(
           savedEntity.properties,
           key.partitionId.projectId,
-          key.partitionId.namespaceId || null,
+          keyNamespace(key),
         ),
   );
 
@@ -59,16 +58,11 @@ export default function EntityPage({
         toEditProperties(
           savedEntity.properties,
           key.partitionId.projectId,
-          key.partitionId.namespaceId || null,
+          keyNamespace(key),
         ),
       );
     }
-  }, [
-    editProperties,
-    key.partitionId.namespaceId,
-    key.partitionId.projectId,
-    savedEntity,
-  ]);
+  }, [editProperties, key, savedEntity]);
 
   const onEditProperty = React.useCallback((property, ev) => {
     ev.preventDefault();
@@ -97,18 +91,13 @@ export default function EntityPage({
     const properties = fromEditProperties(
       editProperties,
       key.partitionId.projectId,
-      key.partitionId.namespaceId || null,
+      keyNamespace(key),
     );
     if (properties == null) {
       return null;
     }
     return { ...savedEntity, properties };
-  }, [
-    editProperties,
-    key.partitionId.namespaceId,
-    key.partitionId.projectId,
-    savedEntity,
-  ]);
+  }, [editProperties, key, savedEntity]);
 
   const discard = React.useCallback(() => {
     if (savedEntity == null) {
@@ -120,15 +109,10 @@ export default function EntityPage({
       toEditProperties(
         savedEntity.properties,
         key.partitionId.projectId,
-        key.partitionId.namespaceId || null,
+        keyNamespace(key),
       ),
     );
-  }, [
-    key.partitionId.namespaceId,
-    key.partitionId.projectId,
-    resetUpdate,
-    savedEntity,
-  ]);
+  }, [key, resetUpdate, savedEntity]);
 
   const save = React.useCallback(() => {
     if (editEntity == null) {
@@ -164,11 +148,7 @@ export default function EntityPage({
         </li>
         <li className="breadcrumb-item active" aria-current="page">
           {truncate(
-            keyToString(
-              savedEntity.key,
-              project,
-              key.partitionId.namespaceId || null,
-            ),
+            keyToString(savedEntity.key, project, keyNamespace(key)),
             80,
           )}
         </li>
@@ -193,7 +173,7 @@ export default function EntityPage({
           const value = valueFromEditValue(
             editValue,
             key.partitionId.projectId,
-            key.partitionId.namespaceId || null,
+            keyNamespace(key),
           );
           return (
             <div key={name} className="accordion-item">
@@ -219,7 +199,7 @@ export default function EntityPage({
                         {editValueToString(
                           editValue,
                           project,
-                          key.partitionId.namespaceId || null,
+                          keyNamespace(key),
                         )}
                       </span>
                     ) : null}
@@ -243,7 +223,7 @@ export default function EntityPage({
                   <div className="accordion-body">
                     <PropertyValueEdit
                       value={editValue}
-                      namespace={key.partitionId.namespaceId || null}
+                      namespace={keyNamespace(key)}
                       project={project}
                       onChange={handlePropertyValueChange.bind(null, name)}
                     />

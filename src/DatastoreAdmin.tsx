@@ -129,7 +129,6 @@ function DatastoreAdminView({ project }: { project: string }) {
         </div>
       </nav>
       <div className="container mt-3 mb-3">
-        {/* {error != null ? <ErrorMessage error={error} /> : null} */}
         {isLoading ? <Loading /> : null}
         <Switch>
           <Route path="/kinds/:kind">
