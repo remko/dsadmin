@@ -13,6 +13,8 @@ Administration GUI for the Google Cloud Datastore Emulator.
   (to avoid CORS problems), and to serve the HTML and JS files. 
   The NPM package uses a small Node.js server. A small [self-contained binary server](https://github.com/remko/dsadmin/releases)
   is also provided, avoiding the need for any system dependencies.
+  If for some reason you need this to be available in a specific environment (Java, Python, ...), it should 
+  be easy to create a similar server to run this in.
   
 
 ## Why?
