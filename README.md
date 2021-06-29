@@ -10,10 +10,10 @@ Administration GUI for the Google Cloud Datastore Emulator.
   Uses the [Datastore REST API](https://cloud.google.com/datastore/docs/reference/data/rest) directly from
   the frontend. 
 - Portable: The only thing a server is used for is for proxying to the datastore emulator 
-  (to avoid CORS problems), and to serve the HTML and JS files. This means that the
-  server (written in Node.JS) can easily be ported to other languages if you want
-  to avoid a dependency on Node.JS.
-
+  (to avoid CORS problems), and to serve the HTML and JS files. 
+  The NPM package uses a small Node.js server. A small self-contained binary server 
+  is also provided, avoiding the need for any system dependencies.
+  
 
 ## Why?
 
@@ -47,12 +47,12 @@ Using the environment from the emulator:
 
 Using command-line arguments:
 
-    npx dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:7081
+    npx dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:8081
 
 ### Using Docker
 
     docker run -p 8080:8080 remko/dsadmin \
-      --project=my-project --datastore-emulator-host=host.docker.internal:7081
+      --project=my-project --datastore-emulator-host=host.docker.internal:8081
 
 
 ## Development

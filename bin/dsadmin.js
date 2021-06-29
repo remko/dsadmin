@@ -24,7 +24,7 @@ const args = yargs(process.argv)
   })
   .option("datastore-emulator-host", {
     type: "string",
-    default: process.env.DATASTORE_EMULATOR_HOST || "localhost:7080",
+    default: process.env.DATASTORE_EMULATOR_HOST || "localhost:8081",
     description:
       "Datastore emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST environment variable.",
     demandOption: true,

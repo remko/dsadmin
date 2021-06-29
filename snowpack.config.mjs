@@ -4,7 +4,7 @@
 import proxy from "http2-proxy";
 
 const emulatorHost = (
-  process.env.DATASTORE_EMULATOR_HOST || "localhost:7080"
+  process.env.DATASTORE_EMULATOR_HOST || "localhost:8081"
 ).split(":");
 if (emulatorHost.length != 2) {
   throw Error(

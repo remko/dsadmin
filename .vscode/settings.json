@@ -1,10 +1,23 @@
 {
-    "editor.tabSize": 2,        
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "bin/dsadmin": true,
+    "bin/dsadmin-*": true,
+    "build/": true,
+    "node_modules/": true
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
   "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
   },
@@ -19,5 +32,5 @@
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  },
+  }
 }

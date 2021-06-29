@@ -7,7 +7,7 @@ const projectID = "dsadmin-dev";
 async function call(action, body) {
   try {
     await axios.post(
-      `http://localhost:7080/v1/projects/dsadmin-dev:${action}`,
+      `http://localhost:8081/v1/projects/dsadmin-dev:${action}`,
       body,
     );
   } catch (e) {

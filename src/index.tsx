@@ -14,8 +14,8 @@ ReactDOM.render(
   <React.StrictMode>
     <DatastoreAdmin
       project={
-        __SNOWPACK_ENV__.DATASTORE_PROJECT_ID ??
-        (window.DSADMIN_ENV || {}).DATASTORE_PROJECT_ID
+        (window.DSADMIN_ENV || {}).DATASTORE_PROJECT_ID ??
+        __SNOWPACK_ENV__.DATASTORE_PROJECT_ID
       }
     />
   </React.StrictMode>,
