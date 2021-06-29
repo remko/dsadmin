@@ -11,8 +11,8 @@ bin/dsadmin:
 
 .PHONY: binaries-dist
 binaries-dist: js-build js-lint js-test
-	env GOOS=darwin GOARCH=amd64 go build -o bin/dsadmin-darwin-amd64 $(GO_PACKAGE)
-	env GOOS=darwin GOARCH=arm64 go build -o bin/dsadmin-darwin-arm64 $(GO_PACKAGE)
+	env GOOS=darwin GOARCH=amd64 go build -o bin/dsadmin-macosx-amd64 $(GO_PACKAGE)
+	env GOOS=darwin GOARCH=arm64 go build -o bin/dsadmin-macosx-arm64 $(GO_PACKAGE)
 	env GOOS=linux GOARCH=amd64 go build -o bin/dsadmin-linux-amd64 $(GO_PACKAGE)
 	env GOOS=windows GOARCH=amd64 go build -o bin/dsadmin-windows-amd64.exe $(GO_PACKAGE)
 

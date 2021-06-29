@@ -11,7 +11,7 @@ Administration GUI for the Google Cloud Datastore Emulator.
   the frontend. 
 - Portable: The only thing a server is used for is for proxying to the datastore emulator 
   (to avoid CORS problems), and to serve the HTML and JS files. 
-  The NPM package uses a small Node.js server. A small self-contained binary server 
+  The NPM package uses a small Node.js server. A small [self-contained binary server](https://github.com/remko/dsadmin/releases)
   is also provided, avoiding the need for any system dependencies.
   
 
@@ -49,11 +49,39 @@ Using command-line arguments:
 
     npx dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:8081
 
+### Using a pre-built binary
+
+Download the correct binary for your OS 
+from the [Releases page](https://github.com/remko/dsadmin/releases).
+
+Start using the environment from the emulator:
+
+    eval $(gcloud beta emulators datastore env-init --data-dir=DATA-DIR)
+    ./dsadmin
+    
+Start using command-line arguments:
+
+    ./dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:8081
+
 ### Using Docker
 
     docker run -p 8080:8080 remko/dsadmin \
       --project=my-project --datastore-emulator-host=host.docker.internal:8081
 
+### Using Docker Compose
+
+Assuming you have a `datastore` container defined running the Google Cloud Datastore
+Emulator, add an entry to your `docker-compose.yml`:
+
+    dsadmin:
+      image: "remko/dsadmin:latest"
+      depends_on:
+        - datastore
+      ports:
+        - "8080:8080"
+      environment:
+        DATASTORE_PROJECT_ID: my-project
+        DATASTORE_EMULATOR_HOST: "datastore:8081"
 
 ## Development
 
