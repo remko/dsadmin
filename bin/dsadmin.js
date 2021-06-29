@@ -10,12 +10,11 @@ const proxy = require("http2-proxy");
 const fs = require("fs");
 const jsesc = require("jsesc");
 const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
 const { exit } = require("yargs");
 
 const publicDir = path.join(__dirname, "..", "build");
 
-const args = yargs(hideBin(process.argv))
+const args = yargs(process.argv)
   .option("project", {
     type: "string",
     default: process.env.DATASTORE_PROJECT_ID,
