@@ -63,7 +63,9 @@ function serveIndex(req, res) {
 
 var file = new static.Server(publicDir);
 
-console.log(`dsadmin listening on http://localhost:${args.port}`);
+console.log(
+  `dsadmin (project ${args.project}) listening on http://localhost:${args.port}`,
+);
 http
   .createServer(function (req, res) {
     if (req.url.startsWith("/v1/")) {
