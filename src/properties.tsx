@@ -1,6 +1,7 @@
 import React from "react";
 import type { PropertyValue } from "./api";
 import { keyToString } from "./keys";
+import isEqual from "lodash/isEqual";
 
 export enum ValueType {
   Null,
@@ -60,7 +61,7 @@ export function valueToString(
 }
 
 export function isValueEqual(a: PropertyValue, b: PropertyValue): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return isEqual(a, b);
 }
 
 export function valueType(v: PropertyValue): ValueType {

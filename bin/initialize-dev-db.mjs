@@ -160,6 +160,81 @@ await call("commit", {
           partitionId: {
             projectId: projectID,
           },
+          path: [{ kind: "Kind", name: "EntityWithUnindexedProperties" }],
+        },
+        properties: {
+          nullProp: {
+            nullValue: null,
+            excludeFromIndexes: true,
+          },
+          booleanProp: {
+            booleanValue: false,
+            excludeFromIndexes: true,
+          },
+          integerProp: {
+            integerValue: 23,
+            excludeFromIndexes: true,
+          },
+          doubleProp: {
+            doubleValue: 1.234566789,
+            excludeFromIndexes: true,
+          },
+          timestampProp: {
+            timestampValue: "1980-08-05T23:18:44.880Z",
+            excludeFromIndexes: true,
+          },
+          keyProp: {
+            keyValue: {
+              partitionId: {
+                projectId: projectID,
+              },
+              path: [{ kind: "Kind", id: 1 }],
+            },
+            excludeFromIndexes: true,
+          },
+          stringProp: {
+            stringValue: "Test string",
+            excludeFromIndexes: true,
+          },
+          blobProp: {
+            blobValue: "AAEK",
+            excludeFromIndexes: true,
+          },
+          geoPointProp: {
+            geoPointValue: {
+              latitude: 23.8798,
+              longitude: 2.7005,
+            },
+            excludeFromIndexes: true,
+          },
+          // // TODO
+          // // entityValue: {}
+          arrayProp: {
+            arrayValue: {
+              values: [
+                {
+                  stringValue: "Value 3",
+                  excludeFromIndexes: true,
+                },
+                { integerValue: 23, excludeFromIndexes: true },
+              ],
+            },
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
           path: [{ kind: "Kind", name: "EntityWithSingleProperty" }],
         },
         properties: {
