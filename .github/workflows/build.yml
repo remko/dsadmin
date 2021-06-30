@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: 'yarn'
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg build
+      - run: yarnpkg lint
+      - run: yarnpkg test --coverage
+
+  build-binaries:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, darwin, windows]
+        goarch: [amd64]
+        include:
+        - goos: darwin
+          goarch: arm64
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: 'yarn'
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16'
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg build
+      - run: go build ./cmd/dsadmin
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+

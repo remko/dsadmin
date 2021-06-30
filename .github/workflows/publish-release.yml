@@ -13,7 +13,8 @@ jobs:
         with:
           node-version: 14
           cache: 'yarn'
-      - run: yarnpkg --pure-lockfile build
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg build
       - run: yarnpkg lint
       - run: yarnpkg test
 
@@ -33,7 +34,8 @@ jobs:
         with:
           node-version: 14
           cache: 'yarn'
-      - run: yarnpkg --pure-lockfile build
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg build
       - uses: wangyoucao577/go-release-action@v1.16
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -61,7 +63,8 @@ jobs:
         working-directory:
           /usr/local/bin
       - run: ko login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-      - run: yarnpkg --pure-lockfile build
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg build
       - run: ko publish -B ./cmd/dsadmin
         env:
           KO_DOCKER_REPO: ghcr.io/remko
@@ -75,7 +78,8 @@ jobs:
         with:
           node-version: 14
           cache: 'yarn'
-      - run: yarnpkg --pure-lockfile publish --non-interactive
+      - run: yarnpkg --pure-lockfile
+      - run: yarnpkg publish --non-interactive
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 

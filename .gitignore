@@ -6,3 +6,4 @@ emulator-data
 yarn-error.log
 bin/dsadmin
 bin/dsadmin-*
+coverage/
