@@ -7,6 +7,7 @@ import QuestionCircle from "./ui/icons/question-circle";
 
 export type PropertyEditValue = {
   type: ValueType;
+  excludeFromIndexes?: boolean;
   stringValue: string;
   booleanValue: boolean;
   geoPointValue: { latitude: string; longitude: string };
@@ -81,37 +82,66 @@ function valueToEditValue(
     return {
       ...EMPTY_VALUE,
       type: ValueType.Timestamp,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
       stringValue: v.timestampValue,
     };
   } else if ("stringValue" in v) {
     return {
       ...EMPTY_VALUE,
       type: ValueType.String,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       stringValue: v.stringValue,
     };
   } else if ("keyValue" in v) {
     return {
       ...EMPTY_VALUE,
       type: ValueType.Key,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       stringValue: keyToString(v.keyValue, project, namespace),
     };
   } else if ("nullValue" in v) {
-    return { ...EMPTY_VALUE, type: ValueType.Null };
+    return {
+      ...EMPTY_VALUE,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+      type: ValueType.Null,
+    };
   } else if ("booleanValue" in v) {
     return {
       ...EMPTY_VALUE,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       type: ValueType.Boolean,
       booleanValue: v.booleanValue,
     };
   } else if ("integerValue" in v) {
     return {
       ...EMPTY_VALUE,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       type: ValueType.Integer,
       stringValue: v.integerValue,
     };
   } else if ("doubleValue" in v) {
     return {
       ...EMPTY_VALUE,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       type: ValueType.Double,
       stringValue: v.doubleValue + "",
     };
@@ -119,6 +149,10 @@ function valueToEditValue(
     return {
       ...EMPTY_VALUE,
       type: ValueType.GeoPoint,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       geoPointValue: {
         latitude: v.geoPointValue.latitude + "",
         longitude: v.geoPointValue.longitude + "",
@@ -127,11 +161,22 @@ function valueToEditValue(
   } else if ("arrayValue" in v) {
     return {
       ...EMPTY_VALUE,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+
       type: ValueType.Array,
       propertyValue: v,
     };
   } else if ("blobValue" in v) {
-    return { ...EMPTY_VALUE, type: ValueType.Blob, stringValue: v.blobValue };
+    return {
+      ...EMPTY_VALUE,
+      type: ValueType.Blob,
+      ...(v.excludeFromIndexes != null
+        ? { excludeFromIndexes: v.excludeFromIndexes }
+        : {}),
+      stringValue: v.blobValue,
+    };
   }
   throw Error("unsupported value");
 }
@@ -145,38 +190,77 @@ export function valueFromEditValue(
     switch (value.type) {
       case ValueType.Timestamp:
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           timestampValue: parseTime(value.stringValue),
         };
       case ValueType.String:
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           stringValue: value.stringValue,
         };
       case ValueType.Key:
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           keyValue: keyFromString(value.stringValue, project, namespace),
         };
       case ValueType.Integer:
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           integerValue: parseInteger(value.stringValue),
         };
       case ValueType.Double: {
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           doubleValue: parseDouble(value.stringValue),
         };
       }
       case ValueType.Blob:
         try {
           atob(value.stringValue);
-          return { blobValue: value.stringValue };
+          return {
+            ...(value.excludeFromIndexes != null
+              ? { excludeFromIndexes: value.excludeFromIndexes }
+              : {}),
+            blobValue: value.stringValue,
+          };
         } catch (e) {
           return null;
         }
       case ValueType.Null:
-        return { nullValue: null };
+        return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+          nullValue: null,
+        };
       case ValueType.Boolean:
-        return { booleanValue: value.booleanValue };
+        return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+          booleanValue: value.booleanValue,
+        };
       case ValueType.GeoPoint: {
         return {
+          ...(value.excludeFromIndexes != null
+            ? { excludeFromIndexes: value.excludeFromIndexes }
+            : {}),
+
           geoPointValue: {
             latitude: parseDouble(value.geoPointValue.latitude),
             longitude: parseDouble(value.geoPointValue.longitude),

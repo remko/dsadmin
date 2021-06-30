@@ -64,7 +64,7 @@ export type GeoPointValue = {
   };
 };
 
-export type PropertyValue =
+export type PropertyValue = { excludeFromIndexes?: boolean } & (
   | NullPropertyValue
   | BooleanPropertyValue
   | IntegerValue
@@ -74,7 +74,8 @@ export type PropertyValue =
   | StringPropertyValue
   | BlobValue
   | GeoPointValue
-  | ArrayValue;
+  | ArrayValue
+);
 
 export type Entity = {
   key: Key;
