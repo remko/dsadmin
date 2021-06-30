@@ -96,7 +96,7 @@ const tokenizeTests: Array<{ input: string; expected: Array<Token> }> = [
 describe("tokenize", () => {
   for (const t of tokenizeTests) {
     const { input, expected } = t;
-    test(`tokenizes ${input.replaceAll(" ", "⎵")}`, () => {
+    test(`tokenizes ${input.replace(/ /g, "⎵")}`, () => {
       expect(tokenizeAll(input)).toEqual(expected);
     });
   }
