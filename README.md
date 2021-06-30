@@ -64,7 +64,7 @@ Start using command-line arguments:
 
 ### Using Docker
 
-    docker run -p 8080:8080 remko/dsadmin \
+    docker run -p 8080:8080 ghcr.io/remko/dsadmin:latest \
       --project=my-project --datastore-emulator-host=host.docker.internal:8081
 
 ### Using Docker Compose
@@ -73,7 +73,7 @@ Assuming you have a `datastore` container defined running the Google Cloud Datas
 Emulator, add an entry to your `docker-compose.yml`:
 
     dsadmin:
-      image: "remko/dsadmin:latest"
+      image: "ghcr.io/remko/dsadmin:latest"
       depends_on:
         - datastore
       ports:
