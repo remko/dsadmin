@@ -1,5 +1,7 @@
 # DSAdmin: Google Cloud Datastore Emulator Admin UI
 
+[![Build](https://github.com/remko/dsadmin/actions/workflows/build.yml/badge.svg)](https://github.com/remko/dsadmin/actions/workflows/build.yml)
+
 Administration GUI for the Google Cloud Datastore Emulator.
 
 - Supports browsing, editing, creating, deleting, querying (using GQL), import, export, ...
