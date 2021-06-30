@@ -25,6 +25,13 @@ export function truncate(str: string, n: number) {
   );
 }
 
+// eslint-disable-next-line no-control-regex
+const printableRE = /^[\r\n\t\x20-\x7F]*$/;
+
+export function isPrintable(blob: string): boolean {
+  return !!blob.match(printableRE);
+}
+
 export function valueToString(
   v: PropertyValue,
   project: string,
@@ -55,7 +62,8 @@ export function valueToString(
       "]"
     );
   } else if ("blobValue" in v) {
-    return `blob (${atob(v.blobValue).length} bytes)`;
+    const blob = atob(v.blobValue);
+    return isPrintable(blob) ? blob : `blob (${blob.length} bytes)`;
   }
   return JSON.stringify(v);
 }

@@ -34,7 +34,7 @@ export function PropertyValueView({
     ) : (
       <span className={classNames(isShort && "text-truncate")}>{text}</span>
     );
-  } else if ("stringValue" in v) {
+  } else if ("stringValue" in v || "blobValue" in v) {
     return (
       <span
         className="d-inline-block text-truncate"

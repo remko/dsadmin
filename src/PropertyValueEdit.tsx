@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import type { PropertyValue } from "./api";
 import { keyFromString, keyToString } from "./keys";
-import { truncate, valueToString, ValueType } from "./properties";
+import { isPrintable, truncate, valueToString, ValueType } from "./properties";
 import QuestionCircle from "./ui/icons/question-circle";
 import useID from "./ui/useID";
 import PlusIcon from "./ui/icons/plus";
@@ -331,23 +331,25 @@ function BlobValueEdit({
     },
     [onChange],
   );
-  let length: number | null = null;
+  let blob: string | null = null;
   try {
-    length = atob(value).length;
+    blob = atob(value);
   } catch (e) {
     //pass
   }
   return (
     <div className="mb-3">
-      <label className="form-label">Value</label>
+      <label className="form-label">Value (Base64)</label>
       <textarea
         className={classNames("form-control", length == null && "is-invalid")}
         rows={5}
         value={value}
         onChange={handleChange}
       />
-      {length != null ? (
-        <div className="form-text">{length} bytes</div>
+      {blob != null ? (
+        <div className="form-text text-truncate">
+          {isPrintable(blob) ? `Decoded: "${blob}"` : `${blob.length} bytes`}
+        </div>
       ) : (
         <div className="invalid-feedback">Invalid Base64 value</div>
       )}
