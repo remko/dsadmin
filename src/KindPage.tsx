@@ -70,10 +70,10 @@ function KindTable({
   );
 
   const onPrevious = React.useCallback(() => {
-    setLocation(`/kinds/${kind}/${page - 1}`);
+    setLocation(`/kinds/${kind}` + (page > 1 ? `?page=${page - 1}` : ""));
   }, [kind, page, setLocation]);
   const onNext = React.useCallback(() => {
-    setLocation(`/kinds/${kind}/${page + 1}`);
+    setLocation(`/kinds/${kind}?page=${page + 1}`);
   }, [kind, page, setLocation]);
 
   if (data == null) {

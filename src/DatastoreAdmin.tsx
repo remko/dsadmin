@@ -16,6 +16,7 @@ import NamespaceSelector from "./NamespaceSelector";
 import { namespacedLocation, namespaceForLocation } from "./locations";
 import DatastoreIcon from "./ui/icons/datastore";
 import { pathToRegexp, Key as PTRKey } from "path-to-regexp";
+import * as qs from "querystringify";
 
 function DatastoreAdminView({ project }: { project: string }) {
   const { mutateAsync: export_, isLoading: isExportLoading } = useExport();
@@ -126,14 +127,19 @@ function DatastoreAdminView({ project }: { project: string }) {
       <div className="container mt-3 mb-3">
         {isLoading ? <Loading /> : null}
         <Switch>
-          <Route path="{/namespaces/:namespace}?/kinds/:kind{/:page}?">
-            {({ kind, namespace, page }) => (
-              <KindPage
-                kind={kind}
-                page={page == null ? 0 : parseInt(page, 10)}
-                namespace={namespace ?? null}
-              />
-            )}
+          <Route path="{/namespaces/:namespace}?/kinds/:kind">
+            {({ kind, namespace }) => {
+              const page = (
+                qs.parse(window.location.search) as Record<string, string>
+              ).page;
+              return (
+                <KindPage
+                  kind={kind}
+                  page={page == null ? 0 : parseInt(page, 10)}
+                  namespace={namespace ?? null}
+                />
+              );
+            }}
           </Route>
           <Route path="{/namespaces/:namespace}?/query">
             {({ namespace }) => <QueryPage namespace={namespace ?? null} />}
