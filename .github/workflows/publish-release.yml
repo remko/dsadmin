@@ -63,9 +63,11 @@ jobs:
         working-directory:
           /usr/local/bin
       - run: ko login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: yarnpkg --pure-lockfile
       - run: yarnpkg build
-      - run: ko publish -B ./cmd/dsadmin
+      - run: ko publish -B --tags latest --tags ${{ env.RELEASE_VERSION }} ./cmd/dsadmin
         env:
           KO_DOCKER_REPO: ghcr.io/remko
 
