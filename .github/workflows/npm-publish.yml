@@ -14,7 +14,7 @@ jobs:
           node-version: 14
           cache: 'yarn'
       - run: yarnpkg --pure-lockfile
-      - run: npm publish
+      - run: yarnpkg publish --non-interactive
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
