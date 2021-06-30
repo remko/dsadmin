@@ -4,6 +4,7 @@ import type { PropertyValue } from "./api";
 import { keyFromString, keyToString } from "./keys";
 import { valueToString, ValueType } from "./properties";
 import QuestionCircle from "./ui/icons/question-circle";
+import useID from "./ui/useID";
 
 export type PropertyEditValue = {
   type: ValueType;
@@ -11,6 +12,7 @@ export type PropertyEditValue = {
   stringValue: string;
   booleanValue: boolean;
   geoPointValue: { latitude: string; longitude: string };
+  arrayValue: Array<Omit<PropertyValue, "arrayValue">>;
   propertyValue: PropertyValue;
 };
 
@@ -20,6 +22,7 @@ const EMPTY_VALUE: PropertyEditValue = Object.freeze({
   booleanValue: false,
   geoPointValue: Object.freeze({ latitude: "", longitude: "" }),
   propertyValue: Object.freeze({ nullValue: null }),
+  arrayValue: [],
 });
 
 function parseTime(v: string) {
@@ -78,81 +81,62 @@ function valueToEditValue(
   project: string,
   namespace: string | null,
 ): PropertyEditValue {
+  const excludeFromIndexes =
+    v.excludeFromIndexes != null
+      ? { excludeFromIndexes: v.excludeFromIndexes }
+      : {};
   if ("timestampValue" in v) {
     return {
       ...EMPTY_VALUE,
       type: ValueType.Timestamp,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
+      ...excludeFromIndexes,
       stringValue: v.timestampValue,
     };
   } else if ("stringValue" in v) {
     return {
       ...EMPTY_VALUE,
       type: ValueType.String,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       stringValue: v.stringValue,
     };
   } else if ("keyValue" in v) {
     return {
       ...EMPTY_VALUE,
       type: ValueType.Key,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       stringValue: keyToString(v.keyValue, project, namespace),
     };
   } else if ("nullValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
+      ...excludeFromIndexes,
       type: ValueType.Null,
     };
   } else if ("booleanValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       type: ValueType.Boolean,
       booleanValue: v.booleanValue,
     };
   } else if ("integerValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       type: ValueType.Integer,
       stringValue: v.integerValue,
     };
   } else if ("doubleValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       type: ValueType.Double,
       stringValue: v.doubleValue + "",
     };
   } else if ("geoPointValue" in v) {
     return {
       ...EMPTY_VALUE,
-      type: ValueType.GeoPoint,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       geoPointValue: {
         latitude: v.geoPointValue.latitude + "",
         longitude: v.geoPointValue.longitude + "",
@@ -161,10 +145,7 @@ function valueToEditValue(
   } else if ("arrayValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
-
+      ...excludeFromIndexes,
       type: ValueType.Array,
       propertyValue: v,
     };
@@ -172,9 +153,7 @@ function valueToEditValue(
     return {
       ...EMPTY_VALUE,
       type: ValueType.Blob,
-      ...(v.excludeFromIndexes != null
-        ? { excludeFromIndexes: v.excludeFromIndexes }
-        : {}),
+      ...excludeFromIndexes,
       stringValue: v.blobValue,
     };
   }
@@ -187,45 +166,34 @@ export function valueFromEditValue(
   namespace: string | null,
 ): PropertyValue | null {
   try {
+    const excludeFromIndexes =
+      value.excludeFromIndexes != null
+        ? { excludeFromIndexes: value.excludeFromIndexes }
+        : {};
     switch (value.type) {
       case ValueType.Timestamp:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           timestampValue: parseTime(value.stringValue),
         };
       case ValueType.String:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           stringValue: value.stringValue,
         };
       case ValueType.Key:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           keyValue: keyFromString(value.stringValue, project, namespace),
         };
       case ValueType.Integer:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           integerValue: parseInteger(value.stringValue),
         };
       case ValueType.Double: {
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           doubleValue: parseDouble(value.stringValue),
         };
       }
@@ -233,9 +201,7 @@ export function valueFromEditValue(
         try {
           atob(value.stringValue);
           return {
-            ...(value.excludeFromIndexes != null
-              ? { excludeFromIndexes: value.excludeFromIndexes }
-              : {}),
+            ...excludeFromIndexes,
             blobValue: value.stringValue,
           };
         } catch (e) {
@@ -243,24 +209,17 @@ export function valueFromEditValue(
         }
       case ValueType.Null:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
+          ...excludeFromIndexes,
           nullValue: null,
         };
       case ValueType.Boolean:
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
+          ...excludeFromIndexes,
           booleanValue: value.booleanValue,
         };
       case ValueType.GeoPoint: {
         return {
-          ...(value.excludeFromIndexes != null
-            ? { excludeFromIndexes: value.excludeFromIndexes }
-            : {}),
-
+          ...excludeFromIndexes,
           geoPointValue: {
             latitude: parseDouble(value.geoPointValue.latitude),
             longitude: parseDouble(value.geoPointValue.longitude),
@@ -321,7 +280,7 @@ function TextValueEdit({
     [onChange],
   );
   return (
-    <div>
+    <div className="mb-3">
       <label className="form-label">Value</label>
       <textarea
         className="form-control"
@@ -353,7 +312,7 @@ function BlobValueEdit({
     //pass
   }
   return (
-    <div>
+    <div className="mb-3">
       <label className="form-label">Value</label>
       <textarea
         className={classNames("form-control", length == null && "is-invalid")}
@@ -394,7 +353,7 @@ function StringValueEdit({
     error = e.message;
   }
   return (
-    <div>
+    <div className="mb-3">
       <label className="form-label">Value</label>
       <div className="input-group">
         <input
@@ -433,7 +392,7 @@ function BooleanValueEdit({
     [onChange],
   );
   return (
-    <div>
+    <div className="mb-3">
       <label className="form-label">Value</label>
       <select
         className="form-select"
@@ -495,7 +454,7 @@ function GeoPointValueEdit({
           <div className="invalid-feedback">{latitudeError}</div>
         ) : null}
       </div>
-      <div>
+      <div className="mb-3">
         <label className="form-label">Longitude</label>
         <input
           className={classNames(
@@ -524,6 +483,8 @@ export default function PropertyValueEdit({
   project: string;
   namespace: string | null;
 }) {
+  const id = useID();
+
   const changeType = React.useCallback(
     (ev) => {
       onChange({ ...value, type: parseInt(ev.target.value, 10) });
@@ -548,6 +509,20 @@ export default function PropertyValueEdit({
   const changeGeoPointValue = React.useCallback(
     (v: { latitude: string; longitude: string }) => {
       onChange({ ...value, geoPointValue: v });
+    },
+    [onChange, value],
+  );
+
+  const changeExcludeFromIndexes = React.useCallback(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = {
+        ...value,
+        ...(ev.target.checked ? { excludeFromIndexes: true } : {}),
+      };
+      if (!ev.target.checked) {
+        delete newValue["excludeFromIndexes"];
+      }
+      onChange(newValue);
     },
     [onChange, value],
   );
@@ -649,6 +624,20 @@ export default function PropertyValueEdit({
             return editValueToString(value, project, namespace);
         }
       })()}
+      {value.type != ValueType.Array && value.type != ValueType.Entity ? (
+        <div className="form-check">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id={id}
+            onChange={changeExcludeFromIndexes}
+            checked={value.excludeFromIndexes ?? false}
+          />
+          <label className="form-check-label" htmlFor={id}>
+            Exclude from indexes
+          </label>
+        </div>
+      ) : null}
     </form>
   );
 }
