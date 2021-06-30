@@ -80,9 +80,10 @@ jobs:
         with:
           node-version: 14
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
       - run: yarnpkg --pure-lockfile
       - run: yarnpkg publish --non-interactive
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
   
