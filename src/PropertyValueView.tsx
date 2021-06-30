@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import React from "react";
 import { Link } from "wouter";
+import truncate from "lodash/truncate";
 import { PropertyValue, useProject } from "./api";
 import { encodeKey, keyToString } from "./keys";
-import { truncate, valueToString } from "./properties";
+import { valueToString } from "./properties";
 
 export function PropertyValueView({
   value: v,
@@ -22,7 +23,7 @@ export function PropertyValueView({
       namespace,
     );
     if (isShort) {
-      text = truncate(text, 20);
+      text = truncate(text, { length: 20 });
     }
     return project === v.keyValue.partitionId.projectId ? (
       <Link

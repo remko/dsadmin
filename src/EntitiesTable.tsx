@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { Entity, Key, keyID, PropertyValue, useDeleteEntities } from "./api";
 import { encodeKey } from "./keys";
-import { truncate } from "./properties";
+import truncate from "lodash/truncate";
 import { PropertyValueView } from "./PropertyValueView";
 import Table from "./ui/Table";
 
@@ -71,7 +71,7 @@ function EntitiesTable({
           accessor: "key",
           Cell: ({ value }: { value: Key }) => (
             <Link href={`/entities/${encodeKey(value)}`}>
-              <a>{truncate(keyID(value), 20)}</a>
+              <a>{truncate(keyID(value), { length: 20 })}</a>
             </Link>
           ),
         },

@@ -2,7 +2,8 @@ import classNames from "classnames";
 import React from "react";
 import type { PropertyValue } from "./api";
 import { keyFromString, keyToString } from "./keys";
-import { isPrintable, truncate, valueToString, ValueType } from "./properties";
+import { isPrintable, valueToString, ValueType } from "./properties";
+import truncate from "lodash/truncate";
 import QuestionCircle from "./ui/icons/question-circle";
 import useID from "./ui/useID";
 import PlusIcon from "./ui/icons/plus";
@@ -587,7 +588,7 @@ function ArrayValueEdit({
                       {
                         /* FIXME: Try to remove truncate. */ truncate(
                           editValueToString(editValue, project, namespace),
-                          30,
+                          { length: 30 },
                         )
                       }
                     </span>

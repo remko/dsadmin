@@ -1,4 +1,3 @@
-import React from "react";
 import type { PropertyValue } from "./api";
 import { keyToString } from "./keys";
 import isEqual from "lodash/isEqual";
@@ -15,14 +14,6 @@ export enum ValueType {
   Array,
   Blob,
   Entity,
-}
-
-export function truncate(str: string, n: number) {
-  return str.length > n ? (
-    <React.Fragment>{str.substr(0, n - 1)}&hellip;</React.Fragment>
-  ) : (
-    <React.Fragment>{str}</React.Fragment>
-  );
 }
 
 // eslint-disable-next-line no-control-regex

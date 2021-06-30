@@ -8,7 +8,8 @@ import {
   useProject,
 } from "./api";
 import { namespacedLocation } from "./locations";
-import { isValueEqual, truncate } from "./properties";
+import { isValueEqual } from "./properties";
+import truncate from "lodash/truncate";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
 import classNames from "classnames";
@@ -194,10 +195,9 @@ export default function EntityPage({
           </Link>
         </li>
         <li className="breadcrumb-item active" aria-current="page">
-          {truncate(
-            keyToString(savedEntity.key, project, keyNamespace(key)),
-            80,
-          )}
+          {truncate(keyToString(savedEntity.key, project, keyNamespace(key)), {
+            length: 80,
+          })}
         </li>
       </ol>
       <h1>Entity</h1>
@@ -263,7 +263,7 @@ export default function EntityPage({
                               project,
                               keyNamespace(key),
                             ),
-                            30,
+                            { length: 30 },
                           )
                         }
                       </span>
