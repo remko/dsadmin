@@ -309,13 +309,6 @@ export function useCreateEntity() {
     },
     {
       onSuccess: (entity) => {
-        console.log("INvalidate", [
-          "namespaces",
-          keyNamespace(entity.key),
-          "kinds",
-          keyKind(entity.key),
-          "entities",
-        ]);
         queryClient.invalidateQueries([
           "namespaces",
           keyNamespace(entity.key),

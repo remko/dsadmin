@@ -121,33 +121,34 @@ function valueToEditValue(
   } else if ("nullValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...excludeFromIndexes,
       type: ValueType.Null,
+      ...excludeFromIndexes,
     };
   } else if ("booleanValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...excludeFromIndexes,
       type: ValueType.Boolean,
+      ...excludeFromIndexes,
       booleanValue: v.booleanValue,
     };
   } else if ("integerValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...excludeFromIndexes,
       type: ValueType.Integer,
+      ...excludeFromIndexes,
       stringValue: v.integerValue,
     };
   } else if ("doubleValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...excludeFromIndexes,
       type: ValueType.Double,
+      ...excludeFromIndexes,
       stringValue: v.doubleValue + "",
     };
   } else if ("geoPointValue" in v) {
     return {
       ...EMPTY_VALUE,
+      type: ValueType.GeoPoint,
       ...excludeFromIndexes,
       geoPointValue: {
         latitude: v.geoPointValue.latitude + "",
@@ -157,8 +158,8 @@ function valueToEditValue(
   } else if ("arrayValue" in v) {
     return {
       ...EMPTY_VALUE,
-      ...excludeFromIndexes,
       type: ValueType.Array,
+      ...excludeFromIndexes,
       arrayValue: (v.arrayValue.values || []).map((v) =>
         valueToEditValue(v, project, namespace),
       ),
@@ -693,7 +694,6 @@ export default function PropertyValueEdit({
     },
     [onChange, value],
   );
-
   return (
     <form>
       <div className="mb-3">
