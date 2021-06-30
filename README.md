@@ -6,10 +6,9 @@ Administration GUI for the Google Cloud Datastore Emulator.
 - Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
-- Hackable: Implemented entirely in the frontend as an SPA. 
+- Portable: Implemented entirely in the frontend as an SPA. 
   Uses the [Datastore REST API](https://cloud.google.com/datastore/docs/reference/data/rest) directly from
-  the frontend. 
-- Portable: The only thing a server is used for is for proxying to the datastore emulator 
+  the frontend. The only thing a server is used for is for proxying to the datastore emulator 
   (to avoid CORS problems), and to serve the HTML and JS files. 
   The NPM package uses a small Node.js server. A small [self-contained binary server](https://github.com/remko/dsadmin/releases)
   is also provided, avoiding the need for any system dependencies.
