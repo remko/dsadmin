@@ -184,7 +184,7 @@ export default function EntityPage({
   const lkey = key.path[key.path.length - 1];
 
   return (
-    <div>
+    <div className="EntityPage">
       <ol className="breadcrumb">
         <li className="breadcrumb-item">
           <Link

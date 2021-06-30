@@ -2,9 +2,12 @@ import classNames from "classnames";
 import React from "react";
 import type { PropertyValue } from "./api";
 import { keyFromString, keyToString } from "./keys";
-import { valueToString, ValueType } from "./properties";
+import { truncate, valueToString, ValueType } from "./properties";
 import QuestionCircle from "./ui/icons/question-circle";
 import useID from "./ui/useID";
+import PlusIcon from "./ui/icons/plus";
+import ExclamationCircle from "./ui/icons/exclamation-circle";
+import TrashIcon from "./ui/icons/trash";
 
 export type PropertyEditValue = {
   type: ValueType;
@@ -12,7 +15,7 @@ export type PropertyEditValue = {
   stringValue: string;
   booleanValue: boolean;
   geoPointValue: { latitude: string; longitude: string };
-  arrayValue: Array<Omit<PropertyValue, "arrayValue">>;
+  arrayValue: Array<PropertyEditValue>;
   propertyValue: PropertyValue;
 };
 
@@ -67,6 +70,14 @@ export function editValueToString(
       return value.booleanValue + "";
     case ValueType.GeoPoint:
       return `lat: ${value.geoPointValue.latitude}, lon: ${value.geoPointValue.longitude}`;
+    case ValueType.Array:
+      return (
+        "[" +
+        value.arrayValue
+          .map((v) => editValueToString(v, project, namespace))
+          .join(", ") +
+        "]"
+      );
     default:
       return valueToString(value.propertyValue, project, namespace);
   }
@@ -147,7 +158,9 @@ function valueToEditValue(
       ...EMPTY_VALUE,
       ...excludeFromIndexes,
       type: ValueType.Array,
-      propertyValue: v,
+      arrayValue: (v.arrayValue.values || []).map((v) =>
+        valueToEditValue(v, project, namespace),
+      ),
     };
   } else if ("blobValue" in v) {
     return {
@@ -226,8 +239,20 @@ export function valueFromEditValue(
           },
         };
       }
-      case ValueType.Array:
-        return value.propertyValue;
+      case ValueType.Array: {
+        const values = value.arrayValue.map((v) =>
+          valueFromEditValue(v, project, namespace),
+        );
+        if (values.some((v) => v == null)) {
+          return null;
+        }
+        return {
+          ...excludeFromIndexes,
+          arrayValue: {
+            values: values as PropertyValue[],
+          },
+        };
+      }
     }
     throw Error("unsupported");
   } catch (e) {
@@ -286,6 +311,7 @@ function TextValueEdit({
         className="form-control"
         rows={5}
         value={value}
+        autoFocus={true}
         onChange={handleChange}
       />
     </div>
@@ -360,6 +386,7 @@ function StringValueEdit({
           className={classNames("form-control", error != null && "is-invalid")}
           type="text"
           value={value}
+          autoFocus={true}
           onChange={handleChange}
         />
         {infoURL != null ? (
@@ -447,6 +474,7 @@ function GeoPointValueEdit({
             "form-control",
             latitudeError != null && "is-invalid",
           )}
+          autoFocus={true}
           value={value.latitude}
           onChange={handleChangeLatitude}
         />
@@ -469,6 +497,135 @@ function GeoPointValueEdit({
         ) : null}
       </div>
     </>
+  );
+}
+
+function ArrayValueEdit({
+  value: values,
+  onChange,
+  project,
+  namespace,
+}: {
+  value: Array<PropertyEditValue>;
+  onChange: (value: Array<PropertyEditValue>) => void;
+  project: string;
+  namespace: string | null;
+}) {
+  const [editingProperty, setEditingProperty] = React.useState<number | null>(
+    null,
+  );
+  const add = React.useCallback(
+    (ev) => {
+      ev.preventDefault();
+      if (values.length === 0) {
+        onChange([...values, newEditValue()]);
+      } else {
+        onChange([...values, { ...newEditValue(), type: values[0].type }]);
+      }
+      setEditingProperty(values.length);
+    },
+    [onChange, values],
+  );
+  const editProperty = React.useCallback((i: number, ev) => {
+    ev.preventDefault();
+    return setEditingProperty((v) => {
+      return v === i ? null : i;
+    });
+  }, []);
+  const changeProperty = React.useCallback(
+    (i: number, v: PropertyEditValue) => {
+      onChange([...values.slice(0, i), v, ...values.slice(i + 1)]);
+    },
+    [onChange, values],
+  );
+  const deleteProperty = React.useCallback(
+    (i: number, ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (!window.confirm(`Are you sure you want to delete this value?`)) {
+        return;
+      }
+      setEditingProperty(null);
+      const newValue = values.slice();
+      newValue.splice(i, 1);
+      onChange(newValue);
+    },
+    [onChange, values],
+  );
+
+  return (
+    <div>
+      <div className="d-flex justify-content-between align-items-center">
+        <label className="form-label">Values</label>
+        <button className="btn btn-sm" onClick={add}>
+          <PlusIcon />
+        </button>
+      </div>
+      <div className="accordion mb-3">
+        {values.map((editValue, i) => {
+          const value = valueFromEditValue(editValue, project, namespace);
+          return (
+            <div key={i} className="accordion-item">
+              <h2 className="accordion-header">
+                <button
+                  className={classNames(
+                    "accordion-button justify-content-between",
+                    i !== editingProperty && "collapsed",
+                  )}
+                  type="button"
+                  onClick={editProperty.bind(null, i)}
+                >
+                  <div style={{ flex: "auto" }}>
+                    <span
+                      className={classNames(
+                        "text-truncate",
+                        i === editingProperty && "fw-bold",
+                      )}
+                    >
+                      {
+                        /* FIXME: Try to remove truncate. */ truncate(
+                          editValueToString(editValue, project, namespace),
+                          30,
+                        )
+                      }
+                    </span>
+                  </div>
+                  {value == null ? (
+                    <div className="text-danger me-2">
+                      <ExclamationCircle />
+                    </div>
+                  ) : null}
+                  <a
+                    role="button"
+                    className="btn btn-sm py-0 px-1 me-2"
+                    onClick={deleteProperty.bind(null, i)}
+                  >
+                    <TrashIcon height={12} width={12} />
+                  </a>
+                </button>
+              </h2>
+              <div
+                className={classNames(
+                  "accordion-collapse collapse",
+                  i === editingProperty && "show",
+                )}
+              >
+                {i === editingProperty ? (
+                  <div className="accordion-body">
+                    <PropertyValueEdit
+                      value={editValue}
+                      namespace={namespace}
+                      project={project}
+                      onChange={changeProperty.bind(null, i)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -509,6 +666,13 @@ export default function PropertyValueEdit({
   const changeGeoPointValue = React.useCallback(
     (v: { latitude: string; longitude: string }) => {
       onChange({ ...value, geoPointValue: v });
+    },
+    [onChange, value],
+  );
+
+  const changeArrayValue = React.useCallback(
+    (v: Array<PropertyEditValue>) => {
+      onChange({ ...value, arrayValue: v });
     },
     [onChange, value],
   );
@@ -618,8 +782,15 @@ export default function PropertyValueEdit({
                 onChange={changeGeoPointValue}
               />
             );
-          // case ValueType.Array:
-          //   return { type, value: [] };
+          case ValueType.Array:
+            return (
+              <ArrayValueEdit
+                value={value.arrayValue}
+                onChange={changeArrayValue}
+                project={project}
+                namespace={namespace}
+              />
+            );
           default:
             return editValueToString(value, project, namespace);
         }

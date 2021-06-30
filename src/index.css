@@ -15,7 +15,7 @@ html {
   vertical-align: -0.125em;
 }
 
-.accordion-collapse.show {
+.EntityPage > .accordion > .accordion-item > .accordion-collapse.show {
   background-color: #f0f0f0;
 }
 
