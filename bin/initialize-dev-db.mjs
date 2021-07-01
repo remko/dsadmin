@@ -284,6 +284,30 @@ await call("commit", {
           partitionId: {
             projectId: projectID,
           },
+          path: [{ kind: "Kind", name: "EntityWithArrayValues" }],
+        },
+        properties: {
+          noArrayProp: {
+            arrayValue: {},
+          },
+          emptyArrayProp: {
+            arrayValue: { values: [] },
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
           path: [{ kind: "Kind", name: "EntityWithNamespaceKeyLink" }],
         },
         properties: {

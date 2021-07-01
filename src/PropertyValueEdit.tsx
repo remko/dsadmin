@@ -255,9 +255,12 @@ export function valueFromEditValue(
         }
         return {
           ...excludeFromIndexes,
-          arrayValue: {
-            values: values as PropertyValue[],
-          },
+          arrayValue:
+            values.length === 0
+              ? {}
+              : {
+                  values: values as PropertyValue[],
+                },
         };
       }
     }
