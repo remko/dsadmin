@@ -471,7 +471,7 @@ export default function PropertyValueEdit({
                 parse={parseTime}
               />
             );
-          case ValueType.Key:
+          case ValueType.Key: {
             let linkURL = undefined;
             try {
               linkURL = `/entities/${encodeKey(
@@ -489,6 +489,7 @@ export default function PropertyValueEdit({
                 infoURL="https://support.google.com/cloud/answer/6365503#zippy=%2Ckey-literals"
               />
             );
+          }
           case ValueType.Integer:
             return (
               <StringValueEdit

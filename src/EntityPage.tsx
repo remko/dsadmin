@@ -26,6 +26,7 @@ import ExclamationCircle from "./ui/icons/exclamation-circle";
 import { keyToString, decodeKey } from "./keys";
 import TrashIcon from "./ui/icons/trash";
 import PlusIcon from "./ui/icons/plus";
+import useDocumentTitle from "./ui/useDocumentTitle";
 
 export default function EntityPage({
   entityKey: encodedKey,
@@ -180,10 +181,13 @@ export default function EntityPage({
     [savedEntity, editEntity],
   );
 
+  const lkey = key.path[key.path.length - 1];
+
+  useDocumentTitle(`${lkey.kind} ${lkey.name ?? lkey.id}`);
+
   if (savedEntity == null || editProperties == null) {
     return error == null ? <Loading /> : <ErrorMessage error={error} />;
   }
-  const lkey = key.path[key.path.length - 1];
 
   return (
     <div className="EntityPage">

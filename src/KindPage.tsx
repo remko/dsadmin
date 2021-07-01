@@ -7,6 +7,7 @@ import Loading from "./ui/Loading";
 import { namespacedLocation } from "./locations";
 import PlusIcon from "./ui/icons/plus";
 import { encodeKey } from "./keys";
+import useDocumentTitle from "./ui/useDocumentTitle";
 
 const pageSize = 25;
 
@@ -109,6 +110,8 @@ function KindPage({
   page: number;
 }) {
   const project = useProject();
+
+  useDocumentTitle(kind);
 
   const [, setLocation] = useLocation();
 

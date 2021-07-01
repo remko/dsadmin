@@ -6,11 +6,14 @@ import Loading from "./ui/Loading";
 import * as qs from "querystringify";
 import { useLocation } from "wouter";
 import QuestionCircle from "./ui/icons/question-circle";
+import useDocumentTitle from "./ui/useDocumentTitle";
 
 export default function QueryPage({ namespace }: { namespace: string | null }) {
   const q = qs.parse(window.location.search) as Record<string, string>;
   const currentQuery = q.q || "";
   const [query, setQuery] = React.useState(currentQuery);
+
+  useDocumentTitle("Query");
 
   const [, setLocation] = useLocation();
 
