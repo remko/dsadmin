@@ -59,8 +59,8 @@ export type BlobValue = {
 
 export type GeoPointValue = {
   geoPointValue: {
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
   };
 };
 

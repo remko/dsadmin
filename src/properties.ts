@@ -44,7 +44,9 @@ export function valueToString(
   } else if ("doubleValue" in v) {
     return v.doubleValue + "";
   } else if ("geoPointValue" in v) {
-    return `lat: ${v.geoPointValue.latitude}, lon: ${v.geoPointValue.longitude}`;
+    return `lat: ${v.geoPointValue.latitude ?? 0}, lon: ${
+      v.geoPointValue.longitude ?? 0
+    }`;
   } else if ("arrayValue" in v) {
     return (
       "[" +
@@ -232,8 +234,8 @@ export function valueToEditValue(
       type: ValueType.GeoPoint,
       ...excludeFromIndexes,
       geoPointValue: {
-        latitude: v.geoPointValue.latitude + "",
-        longitude: v.geoPointValue.longitude + "",
+        latitude: (v.geoPointValue.latitude ?? 0) + "",
+        longitude: (v.geoPointValue.longitude ?? 0) + "",
       },
     };
   } else if ("arrayValue" in v) {
@@ -319,11 +321,13 @@ export function valueFromEditValue(
           booleanValue: value.booleanValue,
         };
       case ValueType.GeoPoint: {
+        const latitude = parseDouble(value.geoPointValue.latitude);
+        const longitude = parseDouble(value.geoPointValue.longitude);
         return {
           ...excludeFromIndexes,
           geoPointValue: {
-            latitude: parseDouble(value.geoPointValue.latitude),
-            longitude: parseDouble(value.geoPointValue.longitude),
+            ...(latitude === 0 ? {} : { latitude }),
+            ...(longitude === 0 ? {} : { longitude }),
           },
         };
       }

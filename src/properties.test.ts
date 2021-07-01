@@ -35,6 +35,19 @@ const editValueRoundTripTests: PropertyValue[] = [
     },
   },
   {
+    geoPointValue: {
+      longitude: 4.7005,
+    },
+  },
+  {
+    geoPointValue: {
+      latitude: 4.7005,
+    },
+  },
+  {
+    geoPointValue: {},
+  },
+  {
     nullValue: null,
   },
   {
