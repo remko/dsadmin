@@ -154,7 +154,7 @@ function partitionID(namespace: string | null) {
 
 export function useNamespaces() {
   const { project } = React.useContext(APIContext)!;
-  return useQuery<string[], Error>("namespaces", async () => {
+  return useQuery<(string | null)[], Error>("namespaces", async () => {
     const r = await runQuery(project, {
       query: {
         kind: [{ name: "__namespace__" }],
@@ -185,7 +185,7 @@ export function useKinds(namespace: string | null) {
 }
 
 export function useEntities(
-  kind: string,
+  kind: string | null,
   namespace: string | null,
   pageSize: number,
   page?: number,
@@ -220,7 +220,7 @@ export function useEntities(
       }
       return result;
     },
-    { keepPreviousData: true, staleTime: 3600 * 1000 },
+    { keepPreviousData: true, staleTime: 3600 * 1000, enabled: kind != null },
   );
 }
 
@@ -292,19 +292,19 @@ export function useUpdateEntity() {
 export function useCreateEntity() {
   const queryClient = useQueryClient();
   const { project } = React.useContext(APIContext)!;
-  return useMutation<Entity, Error, { key: Key }>(
-    async ({ key }) => {
+  return useMutation<Entity, Error, Entity>(
+    async (entity) => {
       const r = await commit(project, {
         mode: "NON_TRANSACTIONAL",
         mutations: [
           {
-            insert: { key, properties: {} },
+            insert: entity,
           },
         ],
       });
       return {
-        key: r.mutationResults[0].key ?? key,
-        properties: {},
+        ...entity,
+        key: r.mutationResults[0].key ?? entity.key,
       };
     },
     {

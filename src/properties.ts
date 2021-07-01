@@ -167,8 +167,14 @@ export function editValueToString(
   }
 }
 
-export function newEditValue() {
-  return { ...EMPTY_VALUE, type: ValueType.Null };
+export function newEditValue(type = ValueType.Null) {
+  return {
+    ...EMPTY_VALUE,
+    type,
+    ...(type === ValueType.Timestamp
+      ? { stringValue: new Date().toISOString() }
+      : {}),
+  };
 }
 
 export function valueToEditValue(

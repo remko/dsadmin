@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import DatastoreAdmin from "./DatastoreAdmin";
+import Modal from "react-modal";
 import "bootstrap/dist/css/bootstrap.css";
 import "./index.css";
 
@@ -9,6 +10,8 @@ declare let __SNOWPACK_ENV__: Record<string, string>;
 declare let window: Window & {
   DSADMIN_ENV?: Record<string, string>;
 };
+
+Modal.setAppElement(document.getElementById("root")!);
 
 ReactDOM.render(
   <React.StrictMode>

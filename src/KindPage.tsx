@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { Key, useCreateEntity, useEntities, useKinds, useProject } from "./api";
+import { Entity, useCreateEntity, useEntities, useKinds } from "./api";
 import EntitiesTable from "./EntitiesTable";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
@@ -8,6 +8,7 @@ import { namespacedLocation } from "./locations";
 import PlusIcon from "./ui/icons/plus";
 import { encodeKey } from "./keys";
 import useDocumentTitle from "./ui/useDocumentTitle";
+import CreateEntityDialog from "./CreateEntityDialog";
 
 const pageSize = 25;
 
@@ -109,7 +110,14 @@ function KindPage({
   namespace: string | null;
   page: number;
 }) {
-  const project = useProject();
+  const [createEntityDialogIsOpen, setCreateEntityDialogIsOpen] =
+    React.useState(false);
+  const openCreateEntityDialog = React.useCallback(() => {
+    setCreateEntityDialogIsOpen(true);
+  }, []);
+  const closeCreateEntityDialog = React.useCallback(() => {
+    setCreateEntityDialogIsOpen(false);
+  }, []);
 
   useDocumentTitle(kind);
 
@@ -121,29 +129,14 @@ function KindPage({
     reset: resetCreateEntity,
   } = useCreateEntity();
 
-  const addEntity = React.useCallback(async () => {
-    resetCreateEntity();
-    const id = window.prompt(
-      "Enter the name of the entity to add.\nLeave empty for an auto-generated numeric ID.",
-    );
-    if (id == null) {
-      return;
-    }
-    const key: Key = {
-      partitionId: {
-        projectId: project,
-        ...(namespace == null ? {} : { namespaceId: namespace }),
-      },
-      path: [],
-    };
-    if (id === "") {
-      key.path.push({ kind });
-    } else {
-      key.path.push({ kind, name: id });
-    }
-    const entity = await createEntity({ key });
-    setLocation(`/entities/${encodeKey(entity.key)}`);
-  }, [createEntity, kind, namespace, project, resetCreateEntity, setLocation]);
+  const addEntity = React.useCallback(
+    async (e: Entity) => {
+      resetCreateEntity();
+      const entity = await createEntity(e);
+      setLocation(`/entities/${encodeKey(entity.key)}`);
+    },
+    [createEntity, resetCreateEntity, setLocation],
+  );
 
   return (
     <div>
@@ -151,13 +144,22 @@ function KindPage({
         <KindSelector value={kind} namespace={namespace} />
         <button
           className="btn btn-sm btn-outline-secondary"
-          onClick={addEntity}
+          onClick={openCreateEntityDialog}
         >
           <PlusIcon />
         </button>
       </div>
       {error != null ? <ErrorMessage error={error} /> : null}
       <KindTable kind={kind} namespace={namespace} page={page} />
+      {createEntityDialogIsOpen ? (
+        <CreateEntityDialog
+          isOpen={true}
+          onRequestClose={closeCreateEntityDialog}
+          onCreate={addEntity}
+          initialKind={kind}
+          initialNamespace={namespace}
+        />
+      ) : null}
     </div>
   );
 }
