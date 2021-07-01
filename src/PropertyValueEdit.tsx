@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import { keyFromString } from "./keys";
+import { encodeKey, keyFromString } from "./keys";
 import {
   editValueToString,
   isPrintable,
@@ -18,6 +18,7 @@ import useID from "./ui/useID";
 import PlusIcon from "./ui/icons/plus";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
 import TrashIcon from "./ui/icons/trash";
+import LinkIcon from "./ui/icons/link";
 
 function TextValueEdit({
   value,
@@ -90,11 +91,13 @@ function StringValueEdit({
   onChange,
   parse,
   infoURL,
+  linkURL,
 }: {
   value: string;
   onChange: (value: string) => void;
   parse: (value: string) => any;
   infoURL?: string;
+  linkURL?: string;
 }) {
   const handleChange = React.useCallback(
     (ev) => {
@@ -119,6 +122,11 @@ function StringValueEdit({
           autoFocus={true}
           onChange={handleChange}
         />
+        {linkURL != null ? (
+          <a href={linkURL} className="input-group-text">
+            <LinkIcon className="bi" />
+          </a>
+        ) : null}
         {infoURL != null ? (
           <a
             href={infoURL}
@@ -464,11 +472,20 @@ export default function PropertyValueEdit({
               />
             );
           case ValueType.Key:
+            let linkURL = undefined;
+            try {
+              linkURL = `/entities/${encodeKey(
+                keyFromString(value.stringValue, project, namespace),
+              )}`;
+            } catch (e) {
+              // pass
+            }
             return (
               <StringValueEdit
                 value={value.stringValue}
                 onChange={changeStringValue}
                 parse={(v: string) => keyFromString(v, project, namespace)}
+                linkURL={linkURL}
                 infoURL="https://support.google.com/cloud/answer/6365503#zippy=%2Ckey-literals"
               />
             );
