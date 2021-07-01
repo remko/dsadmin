@@ -113,7 +113,14 @@ function StringValueEdit({
   }
   return (
     <div className="mb-3">
-      <label className="form-label">Value</label>
+      <label className="form-label">
+        Value
+        {infoURL != null ? (
+          <a href={infoURL} rel="noreferrer" target="_blank">
+            <QuestionCircle className="bi ms-2" />
+          </a>
+        ) : null}
+      </label>
       <div className="input-group">
         <input
           className={classNames("form-control", error != null && "is-invalid")}
@@ -125,16 +132,6 @@ function StringValueEdit({
         {linkURL != null ? (
           <a href={linkURL} className="input-group-text">
             <LinkIcon className="bi" />
-          </a>
-        ) : null}
-        {infoURL != null ? (
-          <a
-            href={infoURL}
-            rel="noreferrer"
-            className="input-group-text"
-            target="_blank"
-          >
-            <QuestionCircle className="bi" />
           </a>
         ) : null}
         {error != null ? <div className="invalid-feedback">{error}</div> : null}

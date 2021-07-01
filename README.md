@@ -36,7 +36,7 @@ interfaces, and even improve on the original Google interface in some areas.
 
 - Creating new entities with ancestor keys or new kinds
 - Editing nested entities
-- Sorting & filtering from the browser
+- Sorting, filtering, projecting from the browser
 
 
 ## Usage
