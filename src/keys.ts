@@ -253,7 +253,7 @@ export function keyToString(
   if (key.partitionId.projectId !== project) {
     result.push(`PROJECT('${key.partitionId.projectId}')`);
   }
-  if (key.partitionId.namespaceId || null !== namespace) {
+  if ((key.partitionId.namespaceId || null) !== namespace) {
     result.push(`NAMESPACE('${key.partitionId.namespaceId || ""}')`);
   }
   for (const { kind, id, name } of key.path) {
