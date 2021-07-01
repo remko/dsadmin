@@ -41,7 +41,7 @@ await call("commit", {
             doubleValue: 4.2,
           },
           timestampProp: {
-            timestampValue: "2021-06-25T15:18:44.880Z",
+            timestampValue: "2021-02-16T18:33:09.3145734Z",
           },
           keyProp: {
             keyValue: {
@@ -108,7 +108,7 @@ await call("commit", {
             doubleValue: 1.234566789,
           },
           timestampProp: {
-            timestampValue: "1980-08-05T23:18:44.880Z",
+            timestampValue: "2021-02-16T18:33:09.3145734Z",
           },
           keyProp: {
             keyValue: {
@@ -182,7 +182,7 @@ await call("commit", {
             excludeFromIndexes: true,
           },
           timestampProp: {
-            timestampValue: "1980-08-05T23:18:44.880Z",
+            timestampValue: "2021-02-16T18:33:09.3145734Z",
             excludeFromIndexes: true,
           },
           keyProp: {

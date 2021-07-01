@@ -187,9 +187,14 @@ export function valueFromEditValue(
         : {};
     switch (value.type) {
       case ValueType.Timestamp:
+        try {
+          parseTime(value.stringValue);
+        } catch (e) {
+          return null;
+        }
         return {
           ...excludeFromIndexes,
-          timestampValue: parseTime(value.stringValue),
+          timestampValue: value.stringValue,
         };
       case ValueType.String:
         return {

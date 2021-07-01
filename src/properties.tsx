@@ -29,7 +29,7 @@ export function valueToString(
   namespace: string | null,
 ): string {
   if ("timestampValue" in v) {
-    return new Date(v.timestampValue).toLocaleString();
+    return v.timestampValue;
   } else if ("stringValue" in v) {
     return v.stringValue;
   } else if ("keyValue" in v) {
