@@ -8,19 +8,20 @@ import {
   useProject,
 } from "./api";
 import { namespacedLocation } from "./locations";
-import { isValueEqual } from "./properties";
-import truncate from "lodash/truncate";
-import ErrorMessage from "./ui/ErrorMessage";
-import Loading from "./ui/Loading";
-import classNames from "classnames";
-import PropertyValueEdit, {
+import {
+  isValueEqual,
   fromEditProperties,
   PropertyEditValue,
   toEditProperties,
   editValueToString,
   valueFromEditValue,
   newEditValue,
-} from "./PropertyValueEdit";
+} from "./properties";
+import truncate from "lodash/truncate";
+import ErrorMessage from "./ui/ErrorMessage";
+import Loading from "./ui/Loading";
+import classNames from "classnames";
+import PropertyValueEdit from "./PropertyValueEdit";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
 import { keyToString, decodeKey } from "./keys";
 import TrashIcon from "./ui/icons/trash";
