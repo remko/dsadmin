@@ -9,8 +9,7 @@ import PlusIcon from "./ui/icons/plus";
 import { encodeKey } from "./keys";
 import useDocumentTitle from "./ui/useDocumentTitle";
 import CreateEntityDialog from "./CreateEntityDialog";
-
-const pageSize = 25;
+import qs from "querystringify";
 
 function KindSelector({
   value,
@@ -58,10 +57,12 @@ function KindTable({
   kind,
   namespace,
   page,
+  pageSize,
 }: {
   kind: string;
   namespace: string | null;
   page: number;
+  pageSize: number;
 }) {
   const [, setLocation] = useLocation();
   const { data, error, isPreviousData } = useEntities(
@@ -72,11 +73,25 @@ function KindTable({
   );
 
   const onPrevious = React.useCallback(() => {
-    setLocation(`/kinds/${kind}` + (page > 1 ? `?page=${page - 1}` : ""));
-  }, [kind, page, setLocation]);
+    setLocation(
+      `/kinds/${kind}` +
+        (page > 1 ? qs.stringify({ page: page - 1, pageSize }, true) : ""),
+    );
+  }, [kind, page, pageSize, setLocation]);
   const onNext = React.useCallback(() => {
-    setLocation(`/kinds/${kind}?page=${page + 1}`);
-  }, [kind, page, setLocation]);
+    setLocation(
+      `/kinds/${kind}` + qs.stringify({ page: page + 1, pageSize }, true),
+    );
+  }, [kind, page, pageSize, setLocation]);
+  const onChangePageSize = React.useCallback(
+    (v: number) => {
+      setLocation(
+        `/kinds/${kind}` + qs.stringify({ page, pageSize: v }, true),
+        { replace: true },
+      );
+    },
+    [kind, page, setLocation],
+  );
 
   if (data == null) {
     return error == null ? <Loading /> : <ErrorMessage error={error} />;
@@ -93,6 +108,8 @@ function KindTable({
         entities={data}
         onNext={onNext}
         onPrevious={onPrevious}
+        onChangePageSize={onChangePageSize}
+        pageSize={pageSize}
         haveNext={data.length >= pageSize}
         namespace={namespace}
         havePrevious={page > 0}
@@ -105,10 +122,12 @@ function KindPage({
   kind,
   namespace,
   page,
+  pageSize,
 }: {
   kind: string;
   namespace: string | null;
   page: number;
+  pageSize: number;
 }) {
   const [createEntityDialogIsOpen, setCreateEntityDialogIsOpen] =
     React.useState(false);
@@ -150,7 +169,12 @@ function KindPage({
         </button>
       </div>
       {error != null ? <ErrorMessage error={error} /> : null}
-      <KindTable kind={kind} namespace={namespace} page={page} />
+      <KindTable
+        kind={kind}
+        namespace={namespace}
+        page={page}
+        pageSize={pageSize}
+      />
       {createEntityDialogIsOpen ? (
         <CreateEntityDialog
           isOpen={true}

@@ -129,13 +129,16 @@ function DatastoreAdminView({ project }: { project: string }) {
         <Switch>
           <Route path="{/namespaces/:namespace}?/kinds/:kind">
             {({ kind, namespace }) => {
-              const page = (
-                qs.parse(window.location.search) as Record<string, string>
-              ).page;
+              const { page, pageSize } = qs.parse(
+                window.location.search,
+              ) as Record<string, string>;
               return (
                 <KindPage
                   kind={kind}
-                  page={page == null ? 0 : parseInt(page, 10)}
+                  page={page == null ? 0 : parseInt(page, 10) || 0}
+                  pageSize={
+                    pageSize == null ? 50 : parseInt(pageSize, 10) || 50
+                  }
                   namespace={namespace ?? null}
                 />
               );

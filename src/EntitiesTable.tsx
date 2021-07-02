@@ -43,6 +43,8 @@ function EntitiesTable({
   haveNext,
   havePrevious,
   namespace,
+  pageSize,
+  onChangePageSize,
 }: {
   entities: Entity[];
   haveNext?: boolean;
@@ -50,6 +52,8 @@ function EntitiesTable({
   onNext?: () => void;
   onPrevious?: () => void;
   namespace: string | null;
+  pageSize?: number;
+  onChangePageSize?: (v: number) => void;
 }) {
   const propertyNames = React.useMemo(
     () =>
@@ -110,6 +114,8 @@ function EntitiesTable({
       onPrevious={onPrevious}
       haveNext={haveNext}
       havePrevious={havePrevious}
+      onChangePageSize={onChangePageSize}
+      pageSize={pageSize}
     />
   );
 }

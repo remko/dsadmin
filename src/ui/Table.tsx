@@ -1,5 +1,8 @@
+import classNames from "classnames";
 import React from "react";
 import { useTable, useRowSelect, TableInstance } from "react-table";
+
+const TABLE_SIZES = [10, 30, 50, 100, 200];
 
 const IndeterminateCheckbox = React.forwardRef<
   HTMLInputElement,
@@ -29,6 +32,8 @@ export default function Table({
   haveNext,
   havePrevious,
   wrapperClassName,
+  pageSize = 50,
+  onChangePageSize,
 }: {
   className?: string;
   wrapperClassName?: string;
@@ -39,6 +44,8 @@ export default function Table({
   havePrevious?: boolean;
   onNext?: () => void;
   onPrevious?: () => void;
+  pageSize?: number;
+  onChangePageSize?: (v: number) => void;
 }) {
   const {
     getTableProps,
@@ -66,6 +73,13 @@ export default function Table({
       ...columns,
     ]);
   }) as TableInstance<any> & { selectedFlatRows: any; state: any };
+
+  const changePageSize = React.useCallback(
+    (ev) => {
+      onChangePageSize!(parseInt(ev.target.value, 10));
+    },
+    [onChangePageSize],
+  );
   return (
     <>
       <div className={wrapperClassName}>
@@ -103,28 +117,54 @@ export default function Table({
       </div>
       <div className="d-flex justify-content-between">
         {Actions != null ? <Actions selectedRows={selectedFlatRows} /> : null}
-        {onNext != null || onPrevious != null ? (
-          <div className="btn-group">
+        <nav className="d-flex align-items-center">
+          {onChangePageSize != null ? (
+            <div className="row me-1">
+              <label className="col-auto gx-2 col-form-label text-muted">
+                Rows
+              </label>
+              <div className="col-auto gx-2">
+                <select
+                  className="form-select text-muted"
+                  value={pageSize}
+                  onChange={changePageSize}
+                >
+                  {TABLE_SIZES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : null}
+          <ul className="pagination mb-0">
             {onPrevious != null ? (
-              <button
-                disabled={!havePrevious}
-                className="btn btn-outline-secondary"
-                onClick={onPrevious}
+              <li
+                className={classNames("page-item", !havePrevious && "disabled")}
               >
-                Previous
-              </button>
+                <button
+                  disabled={!havePrevious}
+                  className="page-link"
+                  onClick={onPrevious}
+                >
+                  &laquo;
+                </button>
+              </li>
             ) : null}
             {onNext != null ? (
-              <button
-                disabled={!haveNext}
-                className="btn btn-outline-secondary"
-                onClick={onNext}
-              >
-                Next
-              </button>
-            ) : null}{" "}
-          </div>
-        ) : null}
+              <li className={classNames("page-item", !haveNext && "disabled")}>
+                <button
+                  disabled={!haveNext}
+                  className="page-link"
+                  onClick={onNext}
+                >
+                  &raquo;
+                </button>
+              </li>
+            ) : null}
+          </ul>
+        </nav>
       </div>
     </>
   );
