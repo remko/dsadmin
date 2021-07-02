@@ -429,7 +429,7 @@ export default function PropertyValueEdit({
     [onChange, value],
   );
   return (
-    <form>
+    <div>
       <div className="mb-3">
         <label className="form-label">Type</label>
         <select
@@ -556,6 +556,6 @@ export default function PropertyValueEdit({
           </label>
         </div>
       ) : null}
-    </form>
+    </div>
   );
 }
