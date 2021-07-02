@@ -34,7 +34,7 @@ export default function EntityPage({
   entityKey: string;
 }) {
   const project = useProject();
-  const key = decodeKey(encodedKey);
+  const key = React.useMemo(() => decodeKey(encodedKey), [encodedKey]);
 
   const { data: savedEntity, error: entityError } = useEntity(key);
   const {
@@ -62,7 +62,7 @@ export default function EntityPage({
   );
 
   React.useEffect(() => {
-    if (editProperties == null && savedEntity != null) {
+    if (savedEntity != null) {
       setEditProperties(
         toEditProperties(
           savedEntity.properties ?? {},
@@ -71,7 +71,7 @@ export default function EntityPage({
         ),
       );
     }
-  }, [editProperties, key, savedEntity]);
+  }, [key, savedEntity]);
 
   const onEditProperty = React.useCallback((property, ev) => {
     ev.preventDefault();
