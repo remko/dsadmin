@@ -393,7 +393,7 @@ export function keyNamespace(key: Key) {
 }
 
 export function keyID(key: Key) {
-  const p = key.path[0];
+  const p = key.path[key.path.length - 1];
   if (p.name != null) {
     return `"${p.name}"`;
   } else {
