@@ -101,7 +101,7 @@ function EntitiesTable({
 
   return (
     <Table
-      className="table table-striped"
+      className="table table-sm table-striped"
       wrapperClassName="table-responsive"
       columns={columns}
       data={entities}

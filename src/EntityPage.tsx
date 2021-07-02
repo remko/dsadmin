@@ -212,7 +212,7 @@ export default function EntityPage({
           })}
         </li>
       </ol>
-      <h1>Entity</h1>
+      <h1 className="h3">Entity</h1>
       <form>
         {lkey.name != null ? (
           <div className="mb-3">
@@ -240,7 +240,7 @@ export default function EntityPage({
         ) : null}
       </form>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Properties</h2>
+        <h2 className="h5 mb-0">Properties</h2>
         <button
           className="btn btn-sm btn-outline-secondary"
           onClick={addProperty}
