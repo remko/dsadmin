@@ -23,7 +23,7 @@ import Loading from "./ui/Loading";
 import classNames from "classnames";
 import PropertyValueEdit from "./PropertyValueEdit";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
-import { keyToString, decodeKey } from "./keys";
+import { keyToString, decodeKey, encodeKey } from "./keys";
 import TrashIcon from "./ui/icons/trash";
 import PlusIcon from "./ui/icons/plus";
 import useDocumentTitle from "./ui/useDocumentTitle";
@@ -182,6 +182,10 @@ export default function EntityPage({
   );
 
   const lkey = key.path[key.path.length - 1];
+  const parentKey =
+    key.path.length > 1
+      ? { ...key, path: key.path.slice(0, key.path.length - 1) }
+      : null;
 
   useDocumentTitle(`${lkey.kind} ${lkey.name ?? lkey.id}`);
 
@@ -218,6 +222,19 @@ export default function EntityPage({
             <div className="form-control-plaintext">{lkey.id}</div>
           </div>
         )}
+        {parentKey != null ? (
+          <div className="mb-3">
+            <label className="form-label">Parent Key</label>
+            <div className="form-control-plaintext">
+              <Link
+                className="text-truncate"
+                href={`/entities/${encodeKey(parentKey)}`}
+              >
+                <a>{keyToString(parentKey, project, keyNamespace(key))}</a>
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </form>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Properties</h2>
