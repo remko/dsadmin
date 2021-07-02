@@ -48,6 +48,9 @@ export default function EntityPage({
   const [editingProperty, setEditingProperty] = React.useState<string | null>(
     null,
   );
+  React.useEffect(() => {
+    setEditingProperty(null);
+  }, [key]);
   const [editProperties, setEditProperties] = React.useState<Record<
     string,
     PropertyEditValue | null

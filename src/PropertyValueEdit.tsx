@@ -19,6 +19,7 @@ import PlusIcon from "./ui/icons/plus";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
 import TrashIcon from "./ui/icons/trash";
 import LinkIcon from "./ui/icons/link";
+import { Link } from "wouter";
 
 function TextValueEdit({
   value,
@@ -130,9 +131,11 @@ function StringValueEdit({
           onChange={handleChange}
         />
         {linkURL != null ? (
-          <a href={linkURL} className="input-group-text">
-            <LinkIcon className="bi" />
-          </a>
+          <Link href={linkURL}>
+            <a className="input-group-text">
+              <LinkIcon className="bi" />
+            </a>
+          </Link>
         ) : null}
         {error != null ? <div className="invalid-feedback">{error}</div> : null}
       </div>
