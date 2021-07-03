@@ -69,14 +69,20 @@ function DatastoreAdminView({ project }: { project: string }) {
   return (
     <>
       <ScrollToTop />
-      <nav className="navbar navbar-expand navbar-dark bg-dark">
+      <nav
+        className="navbar navbar-expand navbar-dark"
+        style={{ backgroundColor: "rgb(48, 81, 135)" }}
+      >
         <div className="container-fluid">
-          <Link className="navbar-brand mb-0 h1" href="/">
-            <DatastoreIcon className="me-2" fill="#4285F4" />
+          <Link
+            className="navbar-brand mb-0 h1 d-flex align-items-center"
+            href="/"
+          >
+            <DatastoreIcon className="me-2" fill="white" />
             Datastore Admin
           </Link>
 
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav ms-auto me-auto mb-2 mb-lg-0">
             <li className="nav-item">
               <Link
                 className={classNames("nav-link", !isQueryRoute && "active")}
