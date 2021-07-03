@@ -1,6 +1,9 @@
+<img src="./doc/logo.svg" height="150">
+
 # DSAdmin: Google Cloud Datastore Emulator Admin UI
 
 [![Build](https://github.com/remko/dsadmin/actions/workflows/build.yml/badge.svg)](https://github.com/remko/dsadmin/actions/workflows/build.yml)
+
 
 **⚠️ This project is still in alpha testing phase. Feedback and bugreports welcome!**
 

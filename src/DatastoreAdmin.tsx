@@ -72,7 +72,7 @@ function DatastoreAdminView({ project }: { project: string }) {
       <nav className="navbar navbar-expand navbar-dark bg-dark">
         <div className="container-fluid">
           <Link className="navbar-brand mb-0 h1" href="/">
-            <DatastoreIcon className="me-2" />
+            <DatastoreIcon className="me-2" fill="#4285F4" />
             Datastore Admin
           </Link>
 
