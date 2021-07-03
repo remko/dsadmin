@@ -32,13 +32,13 @@ This project tries to fix all of the issues with the other Datastore admin
 interfaces, and even improve on the original Google interface in some areas.
 
 
-## Not yet implemented
+## 🚧 Not yet implemented
 
 - Editing nested entities
 - Sorting, filtering, projecting from the browser
 
 
-## Usage
+## 📖 Usage
 
 ### Using NPM
 
@@ -107,7 +107,7 @@ volumes:
   datastore_data:
 ```
 
-## Development
+## 💻 Development
 
 Start a Datastore emulator:
 
@@ -127,3 +127,11 @@ Using command-line:
     env DATASTORE_PROJECT_ID=my-datastore-project \
       DATASTORE_EMULATOR_HOST=localhost:7081 \
       npm start
+
+## 🔋 Powered by ...
+
+This project uses some great open source projects. Check them out if you don't know them.
+
+<div align="center">
+<a href="https://react-query.tanstack.com"><img src="https://raw.githubusercontent.com/tannerlinsley/react-query/master/docs/src/images/logo.svg" height=70 alt="React Query"/></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://react-table.tanstack.com"><img src="https://raw.githubusercontent.com/tannerlinsley/react-table/master/docs/src/images/logo-light.svg" height=75 alt="React Table"/></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/google/ko"><img src="https://github.com/google/ko/raw/main/logo/ko.png" height=75 alt="ko"/></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.snowpack.dev"><img src="https://github.com/snowpackjs/snowpack/raw/main/www/public/img/logo.png" height=75 alt="Snowpack"/></a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/molefrog/wouter"><img src="https://raw.githubusercontent.com/molefrog/wouter/master/assets/logo.svg" height=75 alt="Wouter"/></a>
+</div>
