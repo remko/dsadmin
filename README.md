@@ -72,18 +72,40 @@ Start using command-line arguments:
 
 ### Using Docker Compose
 
-Assuming you have a `datastore` container defined running the Google Cloud Datastore
-Emulator, add an entry to your `docker-compose.yml`:
+Create a `docker-compose.yml` that starts the Datastore Emulator and the Datastore Admin
+container:
 
-    dsadmin:
-      image: "ghcr.io/remko/dsadmin:latest"
-      depends_on:
-        - datastore
-      ports:
-        - "8080:8080"
-      environment:
-        DATASTORE_PROJECT_ID: my-project
-        DATASTORE_EMULATOR_HOST: "datastore:8081"
+```yaml
+version: "3.9"
+services:
+  # DSAdmin container
+  dsadmin:
+    image: "ghcr.io/remko/dsadmin:latest"
+    depends_on:
+      - datastore
+    ports:
+      - "8080:8080"
+    environment:
+      DATASTORE_PROJECT_ID: my-datastore-project
+      DATASTORE_EMULATOR_HOST: "datastore:8081"
+
+  # Datastore Emulator container
+  datastore:
+    image: "gcr.io/google.com/cloudsdktool/cloud-sdk:latest"
+    volumes:
+      - datastore_data:/opt/datastore/data
+    ports:
+      - "8081:8081"
+    command: [
+      "gcloud", "--quiet", "beta", "emulators" ,"datastore", "start", 
+      "--host-port=0.0.0.0:8081", "--data-dir=/opt/datastore/data"
+    ]
+    environment:
+      CLOUDSDK_CORE_PROJECT: my-datastore-project
+
+volumes:
+  datastore_data:
+```
 
 ## Development
 

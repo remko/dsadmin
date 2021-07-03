@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  # DSAdmin container
+  dsadmin:
+    image: "ghcr.io/remko/dsadmin:latest"
+    depends_on:
+      - datastore
+    ports:
+      - "8080:8080"
+    environment:
+      DATASTORE_PROJECT_ID: dsadmin-dev
+      DATASTORE_EMULATOR_HOST: "datastore:8081"
+
+  # Datastore Emulator container
+  datastore:
+    image: "gcr.io/google.com/cloudsdktool/cloud-sdk:latest"
+    volumes:
+      - datastore_data:/opt/datastore/data
+    ports:
+      - "8081:8081"
+    command: [
+      "gcloud", "--quiet", "beta", "emulators" ,"datastore", "start", 
+      "--host-port=0.0.0.0:8081", "--data-dir=/opt/datastore/data"
+    ]
+    environment:
+      CLOUDSDK_CORE_PROJECT: dsadmin-dev
+
+volumes:
+  datastore_data:
