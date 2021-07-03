@@ -160,9 +160,13 @@ export function useNamespaces() {
         kind: [{ name: "__namespace__" }],
       },
     });
-    return (r.batch.entityResults || []).map(
+    const namespaces = (r.batch.entityResults || []).map(
       (e: any) => e.entity.key.path[0].name || null,
     );
+    if (namespaces.length === 0) {
+      namespaces.push(null);
+    }
+    return namespaces;
   });
 }
 
@@ -317,6 +321,7 @@ export function useCreateEntity() {
           "entities",
         ]);
         queryClient.invalidateQueries(["queries"]);
+        queryClient.invalidateQueries(["namespaces"], { exact: true });
       },
     },
   );

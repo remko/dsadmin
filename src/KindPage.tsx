@@ -153,6 +153,7 @@ function KindPage({
   const addEntity = React.useCallback(
     async (e: Entity) => {
       resetCreateEntity();
+      setCreateEntityDialogIsOpen(false);
       const entity = await createEntity(e);
       setLocation(`/entities/${encodeKey(entity.key)}`);
     },
