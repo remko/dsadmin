@@ -5,6 +5,7 @@ import { encodeKey } from "./keys";
 import truncate from "lodash/truncate";
 import { PropertyValueView } from "./PropertyValueView";
 import Table from "./ui/Table";
+import PatchQuestion from "./ui/icons/patch-question";
 
 function EntitiesTableActions({ selectedRows }: { selectedRows: any }) {
   const { mutateAsync: deleteEntities, isLoading: isDeleting } =
@@ -88,7 +89,9 @@ function EntitiesTable({
               accessor: ({ properties }: Entity) => (properties ?? {})[p],
               Cell: ({ value }: { value?: PropertyValue }) => {
                 return value == null ? (
-                  <span className="text-muted">undefined</span>
+                  <span className="text-muted">
+                    <PatchQuestion height={12} />
+                  </span>
                 ) : (
                   <PropertyValueView
                     value={value}
