@@ -112,6 +112,7 @@ function KindTable({
         onPrevious={onPrevious}
         onChangePageSize={onChangePageSize}
         pageSize={pageSize}
+        page={page}
         haveNext={data.length >= pageSize}
         namespace={namespace}
         havePrevious={page > 0}

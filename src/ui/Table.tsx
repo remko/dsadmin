@@ -32,6 +32,7 @@ export default function Table({
   haveNext,
   havePrevious,
   wrapperClassName,
+  page,
   pageSize = 50,
   onChangePageSize,
 }: {
@@ -44,6 +45,7 @@ export default function Table({
   havePrevious?: boolean;
   onNext?: () => void;
   onPrevious?: () => void;
+  page?: number;
   pageSize?: number;
   onChangePageSize?: (v: number) => void;
 }) {
@@ -119,9 +121,9 @@ export default function Table({
         {Actions != null ? <Actions selectedRows={selectedFlatRows} /> : null}
         <nav className="d-flex align-items-center">
           {onChangePageSize != null ? (
-            <div className="row me-1">
+            <div className="row">
               <label className="col-auto gx-2 col-form-label text-muted">
-                Rows
+                Rows per page
               </label>
               <div className="col-auto gx-2">
                 <select
@@ -136,6 +138,11 @@ export default function Table({
                   ))}
                 </select>
               </div>
+            </div>
+          ) : null}
+          {page != null ? (
+            <div className="text-muted ms-4 me-3">
+              {page * pageSize + 1} &#8211; {page * pageSize + data.length}
             </div>
           ) : null}
           <ul className="pagination mb-0">

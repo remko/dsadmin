@@ -44,6 +44,7 @@ function EntitiesTable({
   haveNext,
   havePrevious,
   namespace,
+  page,
   pageSize,
   onChangePageSize,
 }: {
@@ -53,6 +54,7 @@ function EntitiesTable({
   onNext?: () => void;
   onPrevious?: () => void;
   namespace: string | null;
+  page?: number;
   pageSize?: number;
   onChangePageSize?: (v: number) => void;
 }) {
@@ -118,6 +120,7 @@ function EntitiesTable({
       haveNext={haveNext}
       havePrevious={havePrevious}
       onChangePageSize={onChangePageSize}
+      page={page}
       pageSize={pageSize}
     />
   );
