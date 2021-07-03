@@ -298,7 +298,7 @@ export default function EntityPage({
                     <div className="text-muted me-2">(Deleted)</div>
                   ) : value == null ? (
                     <div className="text-danger me-2">
-                      <ExclamationCircle />
+                      <ExclamationCircle title="Error" />
                     </div>
                   ) : !isValueEqual(
                       value,

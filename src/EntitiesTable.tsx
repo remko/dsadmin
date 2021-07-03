@@ -90,7 +90,7 @@ function EntitiesTable({
               Cell: ({ value }: { value?: PropertyValue }) => {
                 return value == null ? (
                   <span className="text-muted">
-                    <PatchQuestion height={12} />
+                    <PatchQuestion title={"Not defined"} height={12} />
                   </span>
                 ) : (
                   <PropertyValueView

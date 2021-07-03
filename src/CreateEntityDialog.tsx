@@ -306,7 +306,7 @@ export default function CreateEntityDialog(
                   </div>
                   {value == null ? (
                     <div className="text-danger me-2">
-                      <ExclamationCircle />
+                      <ExclamationCircle title="Error" />
                     </div>
                   ) : null}
                   {name === editingProperty ? (

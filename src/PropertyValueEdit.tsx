@@ -330,7 +330,7 @@ function ArrayValueEdit({
                   </div>
                   {value == null ? (
                     <div className="text-danger me-2">
-                      <ExclamationCircle />
+                      <ExclamationCircle title="Error" />
                     </div>
                   ) : null}
                   <a

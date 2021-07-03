@@ -3,4 +3,5 @@ export type IconProps = {
   height?: string | number | undefined;
   fill?: string;
   className?: string;
+  title?: string;
 };
