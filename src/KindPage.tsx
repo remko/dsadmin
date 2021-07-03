@@ -75,7 +75,9 @@ function KindTable({
   const onPrevious = React.useCallback(() => {
     setLocation(
       `/kinds/${kind}` +
-        (page > 1 ? qs.stringify({ page: page - 1, pageSize }, true) : ""),
+        (page > 1
+          ? qs.stringify({ page: page - 1, pageSize }, true)
+          : qs.stringify({ pageSize }, true)),
     );
   }, [kind, page, pageSize, setLocation]);
   const onNext = React.useCallback(() => {
