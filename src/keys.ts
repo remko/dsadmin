@@ -87,7 +87,7 @@ export function* tokenize(s: string): Generator<Token, void, unknown> {
         identifier.push(ch);
       }
       if (ch == null) {
-        throw new Error(`unfinished identifier`);
+        throw new Error(`Unfinished identifier`);
       }
       yield { identifier: identifier.join("") };
       ch = readChar();
@@ -112,14 +112,14 @@ export function* tokenize(s: string): Generator<Token, void, unknown> {
         string.push(ch);
       }
       if (ch == null) {
-        throw new Error(`unfinished string`);
+        throw new Error(`Unfinished string`);
       }
       yield { string: string.join("") };
       ch = readChar();
       continue;
     }
 
-    throw new Error(`unexpected character: ${ch}`);
+    throw new Error(`Unexpected character: ${ch}`);
   }
 }
 
@@ -149,7 +149,7 @@ export function parse(s: string): Key {
     !isSymbol(tokens.shift(), "(") ||
     !isSymbol(tokens.pop(), ")")
   ) {
-    throw new Error("invalid key");
+    throw new Error("Invalid key");
   }
 
   // project
@@ -178,20 +178,20 @@ export function parse(s: string): Key {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     if (tokens.length < 3) {
-      throw new Error("expected path");
+      throw new Error("Expected path");
     }
     if (!("identifier" in tokens[0])) {
-      throw new Error("expected kind");
+      throw new Error("Expected kind");
     }
     if (!isSymbol(tokens[1], ",")) {
-      throw new Error(`expected comma, got ${tokenToString(tokens[1])}`);
+      throw new Error(`Expected comma, got ${tokenToString(tokens[1])}`);
     }
     if ("integer" in tokens[2]) {
       key.path.push({ kind: tokens[0].identifier, id: tokens[2].integer });
     } else if ("string" in tokens[2]) {
       key.path.push({ kind: tokens[0].identifier, id: tokens[2].string });
     } else {
-      throw new Error("expected identifier");
+      throw new Error("Expected identifier");
     }
     tokens.shift();
     tokens.shift();
@@ -201,16 +201,16 @@ export function parse(s: string): Key {
     } else if (isSymbol(tokens[0], ",")) {
       tokens.shift();
     } else {
-      throw new Error(`expected end or comma, got ${tokenToString(tokens[0])}`);
+      throw new Error(`Expected end or comma, got ${tokenToString(tokens[0])}`);
     }
   }
 
   if (tokens.length > 0) {
-    throw new Error("expected end");
+    throw new Error("Expected end");
   }
 
   if (key.path.length === 0) {
-    throw new Error("empty path");
+    throw new Error("Empty path");
   }
 
   return key;
@@ -229,7 +229,7 @@ export function keyFromString(
   try {
     key = parse(s);
   } catch (e) {
-    throw new Error("invalid key");
+    throw new Error("Invalid key");
   }
   const namespaceId = key.namespace == "" ? null : key.namespace ?? namespace;
   return {
