@@ -1,11 +1,21 @@
 import React from "react";
 import { Link } from "wouter";
-import { Entity, Key, keyID, PropertyValue, useDeleteEntities } from "./api";
+import {
+  Entity,
+  Key,
+  keyID,
+  OrderDirection,
+  PropertyValue,
+  useDeleteEntities,
+} from "./api";
 import { encodeKey } from "./keys";
 import truncate from "lodash/truncate";
 import { PropertyValueView } from "./PropertyValueView";
 import Table from "./ui/Table";
 import PatchQuestion from "./ui/icons/patch-question";
+import ChevronDown from "./ui/icons/chevron-compact-down";
+import ChevronUp from "./ui/icons/chevron-compact-up";
+import sortBy from "lodash/sortBy";
 
 function EntitiesTableActions({ selectedRows }: { selectedRows: any }) {
   const { mutateAsync: deleteEntities, isLoading: isDeleting } =
@@ -37,6 +47,55 @@ function EntitiesTableActions({ selectedRows }: { selectedRows: any }) {
   );
 }
 
+export type Sort = {
+  property: string | null;
+  direction: OrderDirection;
+};
+
+function Header({
+  children,
+  property,
+  sort,
+  onChangeSort,
+}: {
+  children: React.ReactNode;
+  property: string | null;
+  sort: Sort;
+  onChangeSort?: (v: Sort) => void;
+}) {
+  const toggleSort = React.useCallback(
+    (ev) => {
+      ev.preventDefault();
+      if (
+        sort.property === property &&
+        sort.direction === OrderDirection.Ascending
+      ) {
+        onChangeSort!({ property, direction: OrderDirection.Descending });
+      } else {
+        onChangeSort!({ property, direction: OrderDirection.Ascending });
+      }
+    },
+    [onChangeSort, property, sort.direction, sort.property],
+  );
+  if (onChangeSort == null) {
+    return <>{children}</>;
+  }
+  return (
+    <a role="button" onClick={toggleSort}>
+      {children}
+      {sort.property !== property ? null : (
+        <span className="ms-1">
+          {sort.direction === OrderDirection.Ascending ? (
+            <ChevronUp width={12} height={12} />
+          ) : (
+            <ChevronDown width={12} height={12} />
+          )}
+        </span>
+      )}
+    </a>
+  );
+}
+
 function EntitiesTable({
   entities,
   onNext,
@@ -46,6 +105,8 @@ function EntitiesTable({
   namespace,
   page,
   pageSize,
+  sort = { property: null, direction: OrderDirection.Ascending },
+  onChangeSort,
   onChangePageSize,
 }: {
   entities: Entity[];
@@ -53,6 +114,8 @@ function EntitiesTable({
   havePrevious?: boolean;
   onNext?: () => void;
   onPrevious?: () => void;
+  sort?: Sort;
+  onChangeSort?: (v: Sort) => void;
   namespace: string | null;
   page?: number;
   pageSize?: number;
@@ -74,7 +137,11 @@ function EntitiesTable({
     () =>
       [
         {
-          Header: "ID",
+          Header: () => (
+            <Header property={null} sort={sort} onChangeSort={onChangeSort}>
+              ID
+            </Header>
+          ),
           accessor: "key",
           Cell: ({ value }: { value: Key }) => (
             <Link href={`/entities/${encodeKey(value)}`}>
@@ -83,10 +150,14 @@ function EntitiesTable({
           ),
         },
       ].concat(
-        propertyNames.map(
+        sortBy(propertyNames).map(
           (p) =>
             ({
-              Header: p,
+              Header: () => (
+                <Header property={p} sort={sort} onChangeSort={onChangeSort}>
+                  {p}
+                </Header>
+              ),
               id: p,
               accessor: ({ properties }: Entity) => (properties ?? {})[p],
               Cell: ({ value }: { value?: PropertyValue }) => {
@@ -105,7 +176,7 @@ function EntitiesTable({
             } as any),
         ),
       ),
-    [namespace, propertyNames],
+    [namespace, onChangeSort, propertyNames, sort],
   );
 
   return (

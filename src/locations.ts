@@ -1,5 +1,6 @@
 import { keyNamespace } from "./api";
 import { decodeKey } from "./keys";
+import qs from "querystringify";
 
 const namespaceRE = /^\/namespaces\/([^/]+)\/?/;
 const entitiesRE = /^\/entities\/([^/]+)\/?/;
@@ -19,4 +20,14 @@ export function namespaceForLocation(location: string) {
 
 export function namespacedLocation(location: string, namespace: string | null) {
   return namespace == null ? location : `/namespaces/${namespace}${location}`;
+}
+
+export function updateQuery(oq: string, q: Record<string, any>): string {
+  const nq = { ...qs.parse(oq), ...q };
+  for (const [k, v] of Object.entries(nq)) {
+    if (v === undefined) {
+      delete nq[k];
+    }
+  }
+  return qs.stringify(nq, true);
 }

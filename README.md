@@ -38,7 +38,7 @@ interfaces, and even improve on the original Google interface in some areas.
 ## 🚧 Not yet implemented
 
 - Editing nested entities
-- Sorting, filtering, projecting from the browser
+- UI for filtering & projecting
 
 
 ## 📖 Usage

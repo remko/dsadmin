@@ -1,10 +1,16 @@
 import React from "react";
 import { useLocation } from "wouter";
-import { Entity, useCreateEntity, useEntities, useKinds } from "./api";
-import EntitiesTable from "./EntitiesTable";
+import {
+  Entity,
+  OrderDirection,
+  useCreateEntity,
+  useEntities,
+  useKinds,
+} from "./api";
+import EntitiesTable, { Sort } from "./EntitiesTable";
 import ErrorMessage from "./ui/ErrorMessage";
 import Loading from "./ui/Loading";
-import { namespacedLocation } from "./locations";
+import { namespacedLocation, updateQuery } from "./locations";
 import PlusIcon from "./ui/icons/plus";
 import { encodeKey } from "./keys";
 import useDocumentTitle from "./ui/useDocumentTitle";
@@ -53,6 +59,12 @@ function KindSelector({
   );
 }
 
+type KindQuery = {
+  page?: string;
+  sort?: string;
+  sortDirection?: string;
+};
+
 function KindTable({
   kind,
   namespace,
@@ -65,34 +77,73 @@ function KindTable({
   pageSize: number;
 }) {
   const [, setLocation] = useLocation();
+
+  const q = qs.parse(window.location.search) as KindQuery;
+  const sort: Sort = {
+    property: q.sort ?? null,
+    direction:
+      q.sortDirection == "desc"
+        ? OrderDirection.Descending
+        : OrderDirection.Ascending,
+  };
+
   const { data, error, isPreviousData } = useEntities(
     kind,
+    sort.property == null && sort.direction === OrderDirection.Ascending
+      ? null
+      : {
+          property: sort.property ?? "__key__",
+          direction: sort.direction,
+        },
     namespace,
     pageSize,
     page,
   );
 
+  const setSort = React.useCallback(
+    (sort: Sort) => {
+      const nq = {
+        ...q,
+        sortDirection:
+          sort.direction == OrderDirection.Descending ? "desc" : "asc",
+      };
+      delete nq.page;
+      if (sort.property == null) {
+        delete nq.sort;
+      } else {
+        nq.sort = sort.property;
+      }
+      setLocation(`/kinds/${kind}` + qs.stringify(nq, true));
+    },
+    [kind, q, setLocation],
+  );
+
   const onPrevious = React.useCallback(() => {
     setLocation(
       `/kinds/${kind}` +
-        (page > 1
-          ? qs.stringify({ page: page - 1, pageSize }, true)
-          : qs.stringify({ pageSize }, true)),
+        updateQuery(window.location.search, {
+          page: page > 1 ? page - 1 : undefined,
+        }),
     );
-  }, [kind, page, pageSize, setLocation]);
+  }, [kind, page, setLocation]);
+
   const onNext = React.useCallback(() => {
     setLocation(
-      `/kinds/${kind}` + qs.stringify({ page: page + 1, pageSize }, true),
+      `/kinds/${kind}` +
+        updateQuery(window.location.search, { page: page + 1 }),
     );
-  }, [kind, page, pageSize, setLocation]);
+  }, [kind, page, setLocation]);
+
   const onChangePageSize = React.useCallback(
     (v: number) => {
       setLocation(
-        `/kinds/${kind}` + qs.stringify({ page, pageSize: v }, true),
-        { replace: true },
+        `/kinds/${kind}` + updateQuery(window.location.search, { pageSize: v }),
+        {
+          replace: true,
+        },
       );
     },
-    [kind, page, setLocation],
+    [kind, setLocation],
   );
 
   if (data == null) {
@@ -107,6 +158,8 @@ function KindTable({
         </div>
       ) : null}
       <EntitiesTable
+        sort={sort}
+        onChangeSort={setSort}
         entities={data}
         onNext={onNext}
         onPrevious={onPrevious}

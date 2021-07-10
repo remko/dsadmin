@@ -188,15 +188,33 @@ export function useKinds(namespace: string | null) {
   );
 }
 
+export enum OrderDirection {
+  Ascending = "ASCENDING",
+  Descending = "DESCENDING",
+}
+
+type Order = {
+  property: string;
+  direction: OrderDirection;
+};
+
 export function useEntities(
   kind: string | null,
+  order: Order | null,
   namespace: string | null,
   pageSize: number,
   page?: number,
 ) {
   const { project } = React.useContext(APIContext)!;
   return useQuery<Entity[], Error>(
-    ["namespaces", namespace, "kinds", kind, "entities", [{ page, pageSize }]],
+    [
+      "namespaces",
+      namespace,
+      "kinds",
+      kind,
+      "entities",
+      [{ page, pageSize, order }],
+    ],
     async () => {
       const result: Entity[] = [];
       let offset = (page ?? 0) * pageSize;
@@ -210,6 +228,18 @@ export function useEntities(
             kind: [{ name: kind }],
             limit,
             offset,
+            ...(order == null
+              ? {}
+              : {
+                  order: [
+                    {
+                      property: {
+                        name: order.property,
+                      },
+                      direction: order.direction,
+                    },
+                  ],
+                }),
             ...(startCursor != null ? { startCursor } : {}),
           },
         });
