@@ -51,6 +51,7 @@ export default function CreateEntityDialog(
   const { data: kinds } = useKinds(namespace);
   const { data: existingKindEntities } = useEntities(
     (kinds || []).indexOf(kind) >= 0 ? kind : null,
+    null,
     namespace,
     1,
   );
