@@ -5,8 +5,6 @@
 [![Build](https://github.com/remko/dsadmin/actions/workflows/build.yml/badge.svg)](https://github.com/remko/dsadmin/actions/workflows/build.yml)
 
 
-**⚠️ This project is still in alpha testing phase. Feedback and bugreports welcome!**
-
 Administration GUI for the Google Cloud Datastore Emulator.
 
 - Supports browsing, editing, creating, deleting, querying (using GQL), import, export, ...
