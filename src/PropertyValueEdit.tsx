@@ -20,6 +20,56 @@ import ExclamationCircle from "./ui/icons/exclamation-circle";
 import TrashIcon from "./ui/icons/trash";
 import LinkIcon from "./ui/icons/link";
 import { Link } from "wouter";
+import Modal from "./ui/Modal";
+
+function toPrettyValue(v: string | null) {
+  if (v == null) {
+    return null;
+  }
+  try {
+    const pv = JSON.parse(v);
+    return JSON.stringify(pv, null, 2);
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
+function PrettyValueButton({ value }: { value: string }) {
+  const [isOpen, setOpen] = React.useState(false);
+  const toggleModal = React.useCallback(() => {
+    setOpen((v) => !v);
+  }, []);
+  return (
+    <>
+      {isOpen ? (
+        <Modal
+          title={null}
+          className="PrettyValueModal"
+          onRequestClose={toggleModal}
+          isOpen={true}
+          footer={
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={toggleModal}
+            >
+              Close
+            </button>
+          }
+        >
+          <pre>{value}</pre>
+        </Modal>
+      ) : null}
+      <button
+        className="btn btn-sm btn-outline-secondary"
+        onClick={toggleModal}
+      >
+        {"{}"}
+      </button>
+    </>
+  );
+}
 
 function TextValueEdit({
   value,
@@ -34,9 +84,15 @@ function TextValueEdit({
     },
     [onChange],
   );
+
+  const prettyValue = toPrettyValue(value);
+
   return (
     <div className="mb-3">
-      <label className="form-label">Value</label>
+      <div className="d-flex justify-content-between align-items-center mb-1">
+        <label className="form-label mb-1">Value</label>
+        {prettyValue != null ? <PrettyValueButton value={prettyValue} /> : null}
+      </div>
       <textarea
         className="form-control"
         rows={5}
@@ -62,14 +118,19 @@ function BlobValueEdit({
     [onChange],
   );
   let blob: string | null = null;
+  let prettyValue: string | null = null;
   try {
     blob = atob(value);
+    prettyValue = toPrettyValue(blob);
   } catch (e) {
     //pass
   }
   return (
     <div className="mb-3">
-      <label className="form-label">Value (Base64)</label>
+      <div className="d-flex justify-content-between align-items-center mb-1">
+        <label className="form-label mb-1">Value (Base64)</label>
+        {prettyValue != null ? <PrettyValueButton value={prettyValue} /> : null}
+      </div>
       <textarea
         className={classNames("form-control", length == null && "is-invalid")}
         rows={5}
@@ -112,16 +173,21 @@ function StringValueEdit({
   } catch (e) {
     error = e.message;
   }
+  const prettyValue = toPrettyValue(value);
+
   return (
     <div className="mb-3">
-      <label className="form-label">
-        Value
-        {infoURL != null ? (
-          <a href={infoURL} rel="noreferrer" target="_blank">
-            <QuestionCircle className="bi ms-2" />
-          </a>
-        ) : null}
-      </label>
+      <div className="d-flex justify-content-between align-items-center mb-1">
+        <label className="form-label mb-1">
+          Value
+          {infoURL != null ? (
+            <a href={infoURL} rel="noreferrer" target="_blank">
+              <QuestionCircle className="bi ms-2" />
+            </a>
+          ) : null}
+        </label>
+        {prettyValue != null ? <PrettyValueButton value={prettyValue} /> : null}
+      </div>
       <div className="input-group">
         <input
           className={classNames("form-control", error != null && "is-invalid")}

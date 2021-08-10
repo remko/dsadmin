@@ -35,3 +35,12 @@ html {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
+.PrettyValueModal .modal-body {
+  max-height: calc(100vh - 140px);
+  overflow: scroll;
+}
+
+.PrettyValueModal .modal-dialog {
+  max-width: 95%;
+}

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import Modal, { Props } from "react-modal";
 
@@ -12,7 +13,11 @@ export default function CreateEntityDialog(
 ) {
   const { onRequestClose, title, children, footer } = props;
   return (
-    <Modal {...props} className="modal" overlayClassName="ModalOverlay">
+    <Modal
+      {...props}
+      className={classNames("modal", props.className)}
+      overlayClassName="ModalOverlay"
+    >
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
