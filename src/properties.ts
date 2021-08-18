@@ -95,6 +95,7 @@ export function valueType(v: PropertyValue): ValueType {
 
 export type PropertyEditValue = {
   type: ValueType;
+  meaning?: number;
   excludeFromIndexes?: boolean;
   stringValue: string;
   booleanValue: boolean;
@@ -182,63 +183,58 @@ export function valueToEditValue(
   project: string,
   namespace: string | null,
 ): PropertyEditValue {
-  const excludeFromIndexes =
-    v.excludeFromIndexes != null
+  const baseValue = {
+    ...EMPTY_VALUE,
+    ...(v.excludeFromIndexes != null
       ? { excludeFromIndexes: v.excludeFromIndexes }
-      : {};
+      : {}),
+    ...(v.meaning != null ? { meaning: v.meaning } : {}),
+  };
   if ("timestampValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Timestamp,
-      ...excludeFromIndexes,
       stringValue: v.timestampValue,
     };
   } else if ("stringValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.String,
-      ...excludeFromIndexes,
       stringValue: v.stringValue,
     };
   } else if ("keyValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Key,
-      ...excludeFromIndexes,
       stringValue: keyToString(v.keyValue, project, namespace),
     };
   } else if ("nullValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Null,
-      ...excludeFromIndexes,
     };
   } else if ("booleanValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Boolean,
-      ...excludeFromIndexes,
       booleanValue: v.booleanValue,
     };
   } else if ("integerValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Integer,
-      ...excludeFromIndexes,
       stringValue: v.integerValue,
     };
   } else if ("doubleValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Double,
-      ...excludeFromIndexes,
       stringValue: v.doubleValue + "",
     };
   } else if ("geoPointValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.GeoPoint,
-      ...excludeFromIndexes,
       geoPointValue: {
         latitude: (v.geoPointValue.latitude ?? 0) + "",
         longitude: (v.geoPointValue.longitude ?? 0) + "",
@@ -246,18 +242,16 @@ export function valueToEditValue(
     };
   } else if ("arrayValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Array,
-      ...excludeFromIndexes,
       arrayValue: (v.arrayValue.values || []).map((v) =>
         valueToEditValue(v, project, namespace),
       ),
     };
   } else if ("blobValue" in v) {
     return {
-      ...EMPTY_VALUE,
+      ...baseValue,
       type: ValueType.Blob,
-      ...excludeFromIndexes,
       stringValue: v.blobValue,
     };
   }
@@ -270,10 +264,12 @@ export function valueFromEditValue(
   namespace: string | null,
 ): PropertyValue | null {
   try {
-    const excludeFromIndexes =
-      value.excludeFromIndexes != null
+    const baseValue = {
+      ...(value.excludeFromIndexes != null
         ? { excludeFromIndexes: value.excludeFromIndexes }
-        : {};
+        : {}),
+      ...(value.meaning != null ? { meaning: value.meaning } : {}),
+    };
     switch (value.type) {
       case ValueType.Timestamp:
         try {
@@ -282,27 +278,27 @@ export function valueFromEditValue(
           return null;
         }
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           timestampValue: value.stringValue,
         };
       case ValueType.String:
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           stringValue: value.stringValue,
         };
       case ValueType.Key:
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           keyValue: keyFromString(value.stringValue, project, namespace),
         };
       case ValueType.Integer:
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           integerValue: parseInteger(value.stringValue),
         };
       case ValueType.Double: {
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           doubleValue: parseDouble(value.stringValue),
         };
       }
@@ -310,7 +306,7 @@ export function valueFromEditValue(
         try {
           b64decode(value.stringValue);
           return {
-            ...excludeFromIndexes,
+            ...baseValue,
             blobValue: value.stringValue,
           };
         } catch (e) {
@@ -318,19 +314,19 @@ export function valueFromEditValue(
         }
       case ValueType.Null:
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           nullValue: null,
         };
       case ValueType.Boolean:
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           booleanValue: value.booleanValue,
         };
       case ValueType.GeoPoint: {
         const latitude = parseDouble(value.geoPointValue.latitude);
         const longitude = parseDouble(value.geoPointValue.longitude);
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           geoPointValue: {
             ...(latitude === 0 ? {} : { latitude }),
             ...(longitude === 0 ? {} : { longitude }),
@@ -345,7 +341,7 @@ export function valueFromEditValue(
           return null;
         }
         return {
-          ...excludeFromIndexes,
+          ...baseValue,
           arrayValue:
             values.length === 0
               ? {}

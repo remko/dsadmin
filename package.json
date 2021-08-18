@@ -9,6 +9,7 @@
     "test": "jest",
     "test-coverage": "jest --coverage",
     "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:8081 --data-dir=emulator-data",
+    "initialize-dev-db": "./bin/initialize-dev-db.mjs",
     "prepare": "snowpack build"
   },
   "repository": "github:remko/dsadmin",

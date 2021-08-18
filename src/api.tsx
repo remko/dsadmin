@@ -64,7 +64,10 @@ export type GeoPointValue = {
   };
 };
 
-export type PropertyValue = { excludeFromIndexes?: boolean } & (
+export type PropertyValue = {
+  excludeFromIndexes?: boolean;
+  meaning?: number;
+} & (
   | NullPropertyValue
   | BooleanPropertyValue
   | IntegerValue
