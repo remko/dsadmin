@@ -8,6 +8,7 @@
 Administration GUI for the Google Cloud Datastore Emulator.
 
 - Supports browsing, editing, creating, deleting, querying (using GQL), import, export, ...
+- Supports formatted display of JSON properties & compressed properties
 - Supports large databases
 - Does not have problematic dependencies (such as gRPC, which are not available
   on all platforms)
@@ -30,7 +31,7 @@ features, had performance issues, were painful to set up, or had dependencies
 that prevented them from e.g. being installed in a non-x86 Docker image.
 
 This project tries to fix all of the issues with the other Datastore admin
-interfaces, and even improve on the original Google interface in some areas.
+interfaces, and bring improvements on the original Google interface.
 
 
 ## 🚧 Not yet implemented

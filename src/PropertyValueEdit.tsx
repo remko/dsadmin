@@ -19,8 +19,26 @@ import PlusIcon from "./ui/icons/plus";
 import ExclamationCircle from "./ui/icons/exclamation-circle";
 import TrashIcon from "./ui/icons/trash";
 import LinkIcon from "./ui/icons/link";
+import ArrowsAngleContractIcon from "./ui/icons/arrows-angle-contract";
 import { Link } from "wouter";
 import Modal from "./ui/Modal";
+import { inflate } from "pako";
+
+function decompress(raw: string) {
+  if (raw.length < 1) {
+    return null;
+  }
+  const rawLength = raw.length;
+  const array = new Uint8Array(new ArrayBuffer(rawLength));
+  for (let i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  try {
+    return new TextDecoder().decode(inflate(array));
+  } catch (e) {
+    return null;
+  }
+}
 
 function toPrettyValue(v: string | null) {
   if (v == null) {
@@ -119,9 +137,11 @@ function BlobValueEdit({
   );
   let blob: string | null = null;
   let prettyValue: string | null = null;
+  let decompressedBlob: string | null = null;
   try {
     blob = atob(value);
-    prettyValue = toPrettyValue(blob);
+    decompressedBlob = decompress(blob);
+    prettyValue = toPrettyValue(decompressedBlob ?? blob);
   } catch (e) {
     //pass
   }
@@ -129,7 +149,14 @@ function BlobValueEdit({
     <div className="mb-3">
       <div className="d-flex justify-content-between align-items-center mb-1">
         <label className="form-label mb-1">Value (Base64)</label>
-        {prettyValue != null ? <PrettyValueButton value={prettyValue} /> : null}
+        <div>
+          {decompressedBlob != null ? (
+            <ArrowsAngleContractIcon className="me-2" title="Compressed" />
+          ) : null}
+          {prettyValue != null ? (
+            <PrettyValueButton value={prettyValue} />
+          ) : null}
+        </div>
       </div>
       <textarea
         className={classNames("form-control", length == null && "is-invalid")}
