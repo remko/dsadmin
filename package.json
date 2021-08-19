@@ -17,7 +17,6 @@
     "http2-proxy": "^5.0.53",
     "jsesc": "^3.0.2",
     "node-static": "^0.7.11",
-    "pako": "^2.0.4",
     "yargs": "14.2.3"
   },
   "devDependencies": {
@@ -48,6 +47,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "jest": "^27.0.5",
     "lodash": "^4.17.21",
+    "pako": "^2.0.4",
     "path-to-regexp": "^6.2.0",
     "prettier": "^2.2.1",
     "querystringify": "^2.2.0",
