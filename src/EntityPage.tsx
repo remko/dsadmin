@@ -27,6 +27,7 @@ import { keyToString, decodeKey, encodeKey } from "./keys";
 import TrashIcon from "./ui/icons/trash";
 import PlusIcon from "./ui/icons/plus";
 import useDocumentTitle from "./ui/useDocumentTitle";
+import _ from "lodash";
 
 export default function EntityPage({
   entityKey: encodedKey,
@@ -249,94 +250,96 @@ export default function EntityPage({
         </button>
       </div>
       <div className="accordion mb-3">
-        {Object.entries(editProperties || []).map(([name, editValue]) => {
-          const value =
-            editValue != null
-              ? valueFromEditValue(
-                  editValue,
-                  key.partitionId.projectId,
-                  keyNamespace(key),
-                )
-              : null;
-          return (
-            <div key={name} className="accordion-item">
-              <h2 className="accordion-header">
-                <button
-                  disabled={editValue == null}
-                  className={classNames(
-                    "accordion-button justify-content-between",
-                    name !== editingProperty && "collapsed",
-                  )}
-                  type="button"
-                  onClick={onEditProperty.bind(null, name)}
-                >
-                  <div style={{ flex: "auto" }}>
-                    <span
-                      className={classNames(
-                        name === editingProperty && "fw-bold",
-                        editValue == null && "text-muted",
-                      )}
-                    >
-                      {name}
-                    </span>
-                    {editValue != null && name !== editingProperty ? (
-                      <span className="text-muted text-truncate ms-3">
-                        {
-                          /* FIXME: Try to remove truncate. */ truncate(
-                            editValueToString(
-                              editValue,
-                              project,
-                              keyNamespace(key),
-                            ),
-                            { length: 30 },
-                          )
-                        }
+        {_.sortBy(Object.entries(editProperties || []), ([name]) => name).map(
+          ([name, editValue]) => {
+            const value =
+              editValue != null
+                ? valueFromEditValue(
+                    editValue,
+                    key.partitionId.projectId,
+                    keyNamespace(key),
+                  )
+                : null;
+            return (
+              <div key={name} className="accordion-item">
+                <h2 className="accordion-header">
+                  <button
+                    disabled={editValue == null}
+                    className={classNames(
+                      "accordion-button justify-content-between",
+                      name !== editingProperty && "collapsed",
+                    )}
+                    type="button"
+                    onClick={onEditProperty.bind(null, name)}
+                  >
+                    <div style={{ flex: "auto" }}>
+                      <span
+                        className={classNames(
+                          name === editingProperty && "fw-bold",
+                          editValue == null && "text-muted",
+                        )}
+                      >
+                        {name}
                       </span>
-                    ) : null}
-                  </div>
-                  {editValue == null ? (
-                    <div className="text-muted me-2">(Deleted)</div>
-                  ) : value == null ? (
-                    <div className="text-danger me-2">
-                      <ExclamationCircle title="Error" />
+                      {editValue != null && name !== editingProperty ? (
+                        <span className="text-muted text-truncate ms-3">
+                          {
+                            /* FIXME: Try to remove truncate. */ truncate(
+                              editValueToString(
+                                editValue,
+                                project,
+                                keyNamespace(key),
+                              ),
+                              { length: 30 },
+                            )
+                          }
+                        </span>
+                      ) : null}
                     </div>
-                  ) : !isValueEqual(
-                      value,
-                      (savedEntity.properties ?? {})[name],
-                    ) ? (
-                    <div className="text-muted me-2">(Not saved)</div>
+                    {editValue == null ? (
+                      <div className="text-muted me-2">(Deleted)</div>
+                    ) : value == null ? (
+                      <div className="text-danger me-2">
+                        <ExclamationCircle title="Error" />
+                      </div>
+                    ) : !isValueEqual(
+                        value,
+                        (savedEntity.properties ?? {})[name],
+                      ) ? (
+                      <div className="text-muted me-2">(Not saved)</div>
+                    ) : null}
+                    {name === editingProperty ? (
+                      <a
+                        role="button"
+                        className="btn btn-sm py-0 px-1 me-2"
+                        onClick={deleteProperty.bind(null, name)}
+                      >
+                        <TrashIcon height={12} width={12} />
+                      </a>
+                    ) : null}
+                  </button>
+                </h2>
+                <div
+                  className={classNames(
+                    "accordion-collapse collapse",
+                    name === editingProperty && "show",
+                  )}
+                >
+                  {editValue != null && name === editingProperty ? (
+                    <div className="accordion-body">
+                      <PropertyValueEdit
+                        value={editValue}
+                        namespace={keyNamespace(key)}
+                        project={project}
+                        onChange={handlePropertyValueChange.bind(null, name)}
+                      />
+                    </div>
                   ) : null}
-                  {name === editingProperty ? (
-                    <a
-                      role="button"
-                      className="btn btn-sm py-0 px-1 me-2"
-                      onClick={deleteProperty.bind(null, name)}
-                    >
-                      <TrashIcon height={12} width={12} />
-                    </a>
-                  ) : null}
-                </button>
-              </h2>
-              <div
-                className={classNames(
-                  "accordion-collapse collapse",
-                  name === editingProperty && "show",
-                )}
-              >
-                {editValue != null && name === editingProperty ? (
-                  <div className="accordion-body">
-                    <PropertyValueEdit
-                      value={editValue}
-                      namespace={keyNamespace(key)}
-                      project={project}
-                      onChange={handlePropertyValueChange.bind(null, name)}
-                    />
-                  </div>
-                ) : null}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          },
+        )}
       </div>
       {updateError != null ? <ErrorMessage error={updateError} /> : null}
       <div>
