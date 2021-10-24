@@ -7,7 +7,6 @@ const Plus = (props: IconProps) => (
     width="16"
     height="16"
     fill="currentColor"
-    className="bi"
     viewBox="0 0 16 16"
     {...props}
   >

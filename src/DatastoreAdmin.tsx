@@ -39,7 +39,7 @@ function DatastoreAdminView({ project }: { project: string }) {
         const r = await import_({ inputPath });
         return r;
       } catch (e) {
-        alert(e.message);
+        alert((e as Error).message);
       }
     },
     [import_],
@@ -56,7 +56,7 @@ function DatastoreAdminView({ project }: { project: string }) {
         const r = await export_({ outputPath: outputPath });
         alert(`Exported to "${r.outputURL}"`);
       } catch (e) {
-        alert(e.message);
+        alert((e as Error).message);
       }
     },
     [export_],
@@ -82,7 +82,7 @@ function DatastoreAdminView({ project }: { project: string }) {
             Datastore Admin
           </Link>
 
-          <ul className="navbar-nav ms-auto me-auto mb-2 mb-lg-0">
+          <ul className="navbar-nav ms-auto me-auto">
             <li className="nav-item">
               <Link
                 className={classNames("nav-link", !isQueryRoute && "active")}
@@ -122,11 +122,11 @@ function DatastoreAdminView({ project }: { project: string }) {
               </a>
             </li>
           </ul>
-          <ul className="navbar-nav mb-2 mb-lg-0">
+          <ul className="navbar-nav">
             <li className="nav-item me-3">
               <NamespaceSelector namespace={namespace} />
             </li>
-            <li className="navbar-text">{project}</li>
+            <li className="navbar-text text-nowrap">{project}</li>
           </ul>
         </div>
       </nav>
