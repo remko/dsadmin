@@ -20,9 +20,15 @@ Administration GUI for the Google Cloud Datastore Emulator.
   is also provided, avoiding the need for any system dependencies.
   If for some reason you need this to be available in a specific environment (Java, Python, ...), it should 
   be easy to create a similar server to run this in.
-  
 
-## Why?
+## 📷 Screenshots
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/remko/dsadmin/master/doc/screenshot-entity.png" width=250 alt="Entity editor"/></a>&nbsp;<img src="https://raw.githubusercontent.com/remko/dsadmin/master/doc/screenshot-kind.png" alt="Kinds" width=250/>&nbsp;<img src="https://raw.githubusercontent.com/remko/dsadmin/master/doc/screenshot-create.png" alt="Entity creator" width=250/>
+</div>
+
+
+## ❓ Why?
 
 Since Google stopped shipping an admin interface for their Datastore Emulator,
 there have been some external projects trying to fill the gap. However, all of
