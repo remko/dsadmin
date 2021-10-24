@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 import axios from "axios";
+import crypto from "crypto";
+import zlib from "zlib";
+import { promisify } from "util";
 
 const projectID = "dsadmin-dev";
 
@@ -79,8 +82,6 @@ await call("commit", {
               longitude: 4.7005,
             },
           },
-          // // TODO
-          // // entityValue: {}
           arrayProp: {
             arrayValue: {
               values: [
@@ -433,6 +434,288 @@ for (let i = 0; i < 1000; i++) {
             },
           },
         },
+      },
+    ],
+  });
+}
+
+//////////////////////////////////////////////////////////////////////
+// Demo database
+//////////////////////////////////////////////////////////////////////
+
+const COMPANIES = ["Acme", "Contoso", "NewCo"];
+const COLORS = [
+  "black",
+  "white",
+  "red",
+  "green",
+  "yellow",
+  "blue",
+  "pink",
+  "gray",
+  "brown",
+  "orange",
+  "purple",
+];
+const FIRST_NAMES = [
+  "Emma",
+  "Olivia",
+  "Ava",
+  "Isabella",
+  "Sophia",
+  "Charlotte",
+  "Mia",
+  "Amelia",
+  "Harper",
+  "Evelyn",
+  "Abigail",
+  "Emily",
+  "Elizabeth",
+  "Mila",
+  "Ella",
+  "Avery",
+  "Sofia",
+  "Camila",
+  "Aria",
+  "Scarlett",
+  "Victoria",
+  "Madison",
+  "Luna",
+  "Grace",
+  "Chloe",
+  "Penelope",
+  "Layla",
+  "Riley",
+  "Zoey",
+  "Nora",
+  "Lily",
+  "Eleanor",
+  "Liam",
+  "Noah",
+  "William",
+  "James",
+  "Oliver",
+  "Benjamin",
+  "Elijah",
+  "Lucas",
+  "Mason",
+  "Logan",
+  "Alexander",
+  "Ethan",
+  "Jacob",
+  "Michael",
+  "Daniel",
+  "Henry",
+  "Jackson",
+  "Sebastian",
+  "Aiden",
+  "Matthew",
+  "Samuel",
+  "David",
+  "Joseph",
+  "Carter",
+  "Owen",
+  "Wyatt",
+  "John",
+  "Jack",
+  "Luke",
+  "Jayden",
+  "Dylan",
+  "Grayson",
+];
+const LAST_NAMES = [
+  "Smith",
+  "Johnson",
+  "Williams",
+  "Jones",
+  "Brown",
+  "Davis",
+  "Miller",
+  "Wilson",
+  "Moore",
+  "Taylor",
+  "Anderson",
+  "Thomas",
+  "Jackson",
+  "White",
+  "Harris",
+  "Martin",
+  "Thompson",
+  "Garcia",
+  "Martinez",
+  "Robinson",
+  "Clark",
+  "Rodriguez",
+  "Lewis",
+  "Lee",
+  "Walker",
+  "Hall",
+  "Allen",
+  "Young",
+  "Hernandez",
+  "King",
+  "Wright",
+  "Lopez",
+  "Hill",
+  "Scott",
+  "Green",
+  "Adams",
+  "Baker",
+  "Gonzalez",
+  "Nelson",
+  "Carter",
+  "Mitchell",
+  "Perez",
+  "Roberts",
+  "Turner",
+  "Phillips",
+  "Campbell",
+  "Parker",
+  "Evans",
+  "Edwards",
+  "Collins",
+  "Stewart",
+  "Sanchez",
+  "Morris",
+  "Rogers",
+  "Reed",
+  "Cook",
+  "Morgan",
+  "Bell",
+  "Murphy",
+  "Bailey",
+  "Rivera",
+  "Cooper",
+  "Richardson",
+  "Cox",
+];
+
+for (let i = 0; i < COMPANIES.length; ++i) {
+  const entity = {
+    key: {
+      partitionId: {
+        projectId: projectID,
+        namespaceId: "People",
+      },
+      path: [{ kind: "Company", name: i + "" }],
+    },
+    properties: {
+      name: {
+        stringValue: COMPANIES[i],
+      },
+      established: {
+        integerValue: Math.floor(1950 + Math.random() * 50),
+      },
+    },
+  };
+  await call("commit", {
+    mode: "NON_TRANSACTIONAL",
+    mutations: [
+      {
+        insert: entity,
+      },
+    ],
+  });
+}
+
+for (let i = 0; i < 100; i++) {
+  const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+  const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+  const name = (
+    await promisify(zlib.deflate)(
+      `{"firstName":"${firstName}","lastName":"${lastName}"}`,
+    )
+  ).toString("base64");
+  const company = Math.floor(Math.random() * COMPANIES.length);
+  const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${COMPANIES[
+    company
+  ].toLowerCase()}.com`;
+  const colors = [];
+  const numColors = Math.floor(Math.random() * 5);
+  for (let j = 0; j < numColors; j++) {
+    colors.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+  }
+  const children = Math.floor(Math.random() * 5);
+  const latitude = Math.random() * 180 - 90;
+  const longitude = Math.random() * 360 - 180;
+  const married = !!Math.floor(Math.random() * 2);
+  const birthday = new Date(Math.random() * 1325462400000 - 63162000000);
+  const length = Math.random() * 1.7 + 0.5;
+
+  const dnap = [];
+  for (let j = 0; j < 100; ++j) {
+    dnap.push(["A", "T", "G", "C"][Math.floor(Math.random() * 4)]);
+  }
+  const dna = (await promisify(zlib.deflate)(dnap.join(""))).toString("base64");
+
+  const entity = {
+    key: {
+      partitionId: {
+        projectId: projectID,
+        namespaceId: "People",
+      },
+      path: [{ kind: "Person", id: null }],
+    },
+    properties: {
+      email: {
+        stringValue: email,
+      },
+      isMarried: {
+        booleanValue: married,
+      },
+      children: {
+        integerValue: children,
+      },
+      length: {
+        doubleValue: length,
+      },
+      birthday: {
+        timestampValue: birthday.toISOString(),
+      },
+      company: {
+        keyValue: {
+          partitionId: {
+            projectId: projectID,
+            namespaceId: "People",
+          },
+          path: [{ kind: "Company", name: company + "" }],
+        },
+      },
+      location: {
+        geoPointValue: {
+          latitude,
+          longitude,
+        },
+      },
+      colors: {
+        arrayValue: {
+          values: colors.map((color) => ({
+            stringValue: color,
+          })),
+        },
+      },
+
+      accessKey: {
+        blobValue: crypto.randomBytes(32).toString("base64"),
+        excludeFromIndexes: true,
+      },
+
+      dna: {
+        blobValue: dna,
+        excludeFromIndexes: true,
+      },
+
+      name: {
+        blobValue: name,
+        excludeFromIndexes: true,
+      },
+    },
+  };
+  await call("commit", {
+    mode: "NON_TRANSACTIONAL",
+    mutations: [
+      {
+        insert: entity,
       },
     ],
   });
