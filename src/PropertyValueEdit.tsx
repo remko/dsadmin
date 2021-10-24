@@ -23,6 +23,7 @@ import ArrowsAngleContractIcon from "./ui/icons/arrows-angle-contract";
 import { Link } from "wouter";
 import Modal from "./ui/Modal";
 import { inflate } from "pako";
+import type { Error } from "./api";
 
 function decompress(raw: string) {
   if (raw.length < 1) {
@@ -181,12 +182,14 @@ function StringValueEdit({
   parse,
   infoURL,
   linkURL,
+  isDisablePretty = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   parse: (value: string) => any;
   infoURL?: string;
   linkURL?: string;
+  isDisablePretty?: boolean;
 }) {
   const handleChange = React.useCallback(
     (ev) => {
@@ -198,9 +201,9 @@ function StringValueEdit({
   try {
     parse(value);
   } catch (e) {
-    error = e.message;
+    error = (e as Error).message;
   }
-  const prettyValue = toPrettyValue(value);
+  const prettyValue = isDisablePretty ? null : toPrettyValue(value);
 
   return (
     <div className="mb-3">
@@ -287,13 +290,13 @@ function GeoPointValueEdit({
   try {
     parseDouble(value.latitude);
   } catch (e) {
-    latitudeError = e.message;
+    latitudeError = (e as Error).message;
   }
   let longitudeError: string | null = null;
   try {
     parseDouble(value.longitude);
   } catch (e) {
-    longitudeError = e.message;
+    longitudeError = (e as Error).message;
   }
 
   return (
@@ -589,6 +592,7 @@ export default function PropertyValueEdit({
                 value={value.stringValue}
                 onChange={changeStringValue}
                 parse={parseInteger}
+                isDisablePretty={true}
               />
             );
           case ValueType.Double:
@@ -597,6 +601,7 @@ export default function PropertyValueEdit({
                 value={value.stringValue}
                 onChange={changeStringValue}
                 parse={parseDouble}
+                isDisablePretty={true}
               />
             );
           case ValueType.Blob:
