@@ -96,6 +96,8 @@ function Header({
   );
 }
 
+const defaultSort = { property: null, direction: OrderDirection.Ascending };
+
 function EntitiesTable({
   entities,
   onNext,
@@ -105,7 +107,7 @@ function EntitiesTable({
   namespace,
   page,
   pageSize,
-  sort = { property: null, direction: OrderDirection.Ascending },
+  sort = defaultSort,
   onChangeSort,
   onChangePageSize,
 }: {
