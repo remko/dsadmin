@@ -12,7 +12,7 @@ const jsesc = require("jsesc");
 const yargs = require("yargs/yargs");
 const { exit } = require("yargs");
 
-const publicDir = path.join(__dirname, "..", "build");
+const publicDir = path.join(__dirname, "..", "public");
 
 const args = yargs(process.argv)
   .option("project", {

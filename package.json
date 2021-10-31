@@ -2,15 +2,17 @@
   "name": "dsadmin",
   "version": "0.17.0",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "snowpack build",
+    "start": "concurrently -n db,js,srv npm:start-emulator npm:start-build npm:start-server",
+    "build": "./build.mjs",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "prettier --loglevel warn --check \"src/**/*.{js,jsx,ts,tsx}\" && tsc --noEmit && eslint .",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:8081 --data-dir=emulator-data",
+    "start-build": "./build.mjs --watch",
+    "start-server": "env DSADMIN_DEV=1 go run ./cmd/dsadmin/dsadmin.go -project=dsadmin-dev",
     "initialize-dev-db": "./bin/initialize-dev-db.mjs",
-    "prepare": "snowpack build"
+    "prepare": "./build.mjs"
   },
   "repository": "github:remko/dsadmin",
   "dependencies": {
@@ -23,9 +25,6 @@
     "@babel/core": "^7.14.6",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-typescript": "^7.14.5",
-    "@snowpack/plugin-dotenv": "^2.1.0",
-    "@snowpack/plugin-react-refresh": "^2.5.0",
-    "@snowpack/plugin-typescript": "^1.2.1",
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",
     "@types/querystringify": "^2.0.0",
@@ -33,7 +32,6 @@
     "@types/react-dom": "^17.0.3",
     "@types/react-modal": "^3.12.0",
     "@types/react-table": "^7.7.1",
-    "@types/snowpack-env": "^2.3.3",
     "@types/yargs": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
     "@typescript-eslint/parser": "^4.27.0",
@@ -41,6 +39,8 @@
     "babel-jest": "^27.0.5",
     "bootstrap": "^5.0.1",
     "classnames": "^2.3.1",
+    "concurrently": "^6.3.0",
+    "esbuild": "^0.13.12",
     "eslint": "^7.29.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
@@ -56,12 +56,11 @@
     "react-modal": "^3.14.3",
     "react-query": "^3.17.2",
     "react-table": "^7.7.0",
-    "snowpack": "^3.3.7",
     "typescript": "^4.3.5",
     "wouter": "^2.7.4"
   },
   "files": [
-    "build",
+    "public",
     "bin/dsadmin.js"
   ],
   "bin": "./bin/dsadmin.js",

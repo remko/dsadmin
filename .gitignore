@@ -1,6 +1,6 @@
 .DS_Store
 .snowpack
-build
+public/dist
 node_modules
 emulator-data
 yarn-error.log
