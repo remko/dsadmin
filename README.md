@@ -117,24 +117,21 @@ volumes:
 
 ## 💻 Development
 
-Start a Datastore emulator:
-
-    npm run start-emulator
-    
-Start the development server:
+Start all development servers (datastore emulator, proxy, and frontend build):
 
     npm start
 
-If you want to run against your own running instance of the Datastore emulator:
-
+If you want to run against your own running instance of the Datastore emulator,
+start the backend server and the build server separately:
+  
     eval $(gcloud beta emulators datastore env-init --data-dir=DATA-DIR)
-    npm start
+    ./bin/dsadmin.mjs
+    npm start-build
 
-Using command-line:
+or using command-line arguments:
 
-    env DATASTORE_PROJECT_ID=my-datastore-project \
-      DATASTORE_EMULATOR_HOST=localhost:7081 \
-      npm start
+    ./bin/dsadmin.mjs --project=my-datastore-project --datastore-emulator-host=localhost:8081
+    npm start-build
 
 ## 🔋 Powered by ...
 
