@@ -1,3 +1,5 @@
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
 import type { PropertyValue } from "./api";
 import { valueToEditValue, valueFromEditValue } from "./properties";
 
@@ -69,16 +71,13 @@ const editValueRoundTripTests: PropertyValue[] = [
   },
 ];
 
-describe("value(To|From)EditValue", () => {
-  for (const t of editValueRoundTripTests) {
-    test(`round trips ${JSON.stringify(t)}`, () => {
-      expect(
-        valueFromEditValue(
-          valueToEditValue(t, "project", null),
-          "project",
-          null,
-        ),
-      ).toEqual(t);
-    });
-  }
-});
+const test = suite("value(To|From)EditValue");
+for (const t of editValueRoundTripTests) {
+  test(`round trips ${JSON.stringify(t)}`, () => {
+    assert.equal(
+      valueFromEditValue(valueToEditValue(t, "project", null), "project", null),
+      t,
+    );
+  });
+}
+test.run();

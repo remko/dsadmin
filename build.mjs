@@ -4,12 +4,20 @@
 import esbuild from "esbuild";
 import process from "process";
 import { createServer } from "http";
+import glob from "glob";
+import child_process from "child_process";
+import fs from "fs";
 
 let watch = false;
+let test = false;
 for (const arg of process.argv.slice(2)) {
   switch (arg) {
     case "--watch":
       watch = true;
+      break;
+    case "--test":
+      test = true;
+      break;
   }
 }
 
@@ -25,7 +33,41 @@ const buildOptions = {
   plugins: [],
 };
 
-if (watch) {
+if (test) {
+  const runTests = () => {
+    // Slower, more convenient alternative:
+    //    spawn("npm", ["exec", "uvu", ".esbuild-test"], ...
+    child_process.spawn("node_modules/.bin/uvu", [".esbuild-test"], {
+      stdio: "inherit",
+    });
+    // console.log("BOO", r);
+    // r.stdout.on("data", () => {
+    //   console.log("DATA");
+    // });
+    // // execArgv: ["--enable-source-maps"],
+  };
+  fs.rmSync(".esbuild-test", { recursive: true, force: true });
+  esbuild
+    .build({
+      bundle: true,
+      sourcemap: true,
+      platform: "node",
+      outdir: ".esbuild-test",
+      entryPoints: glob.sync("src/**/*.test.[jt]s"),
+      watch: watch
+        ? {
+            onRebuild: (error) => {
+              if (!error) {
+                console.clear();
+                runTests();
+              }
+            },
+          }
+        : undefined,
+      external: ["uvu", "lodash"],
+    })
+    .then(runTests);
+} else if (watch) {
   const clients = [];
   esbuild.build({
     ...buildOptions,

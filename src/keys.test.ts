@@ -1,3 +1,5 @@
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
 import {
   keyFromString,
   Token,
@@ -93,14 +95,16 @@ const tokenizeTests: Array<{ input: string; expected: Array<Token> }> = [
   },
 ];
 
-describe("tokenize", () => {
+(() => {
+  const test = suite("tokenize");
   for (const t of tokenizeTests) {
     const { input, expected } = t;
     test(`tokenizes ${input.replace(/ /g, "⎵")}`, () => {
-      expect(tokenizeAll(input)).toEqual(expected);
+      assert.equal(tokenizeAll(input), expected);
     });
   }
-});
+  test.run();
+})();
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -195,18 +199,20 @@ const parseTests: Array<{ input: string; expected: Key | null }> = [
   },
 ];
 
-describe("parse", () => {
+(() => {
+  const test = suite("parse");
   for (const t of parseTests) {
     const { input, expected } = t;
     test(`parses ${input}`, () => {
       if (expected == null) {
-        expect(() => parse(input)).toThrowError();
+        assert.throws(() => parse(input));
       } else {
-        expect(parse(input)).toEqual(expected);
+        assert.equal(parse(input), expected);
       }
     });
   }
-});
+  test.run();
+})();
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -318,18 +324,20 @@ const keyFromStringTests: Array<{
   },
 ];
 
-describe("keyFromString", () => {
+(() => {
+  const test = suite("keyFromString");
   for (const t of keyFromStringTests) {
     const { input, project, namespace, expected } = t;
     test(`converts ${input}`, () => {
       if (expected == null) {
-        expect(() => keyFromString(input, project, namespace)).toThrowError();
+        assert.throws(() => keyFromString(input, project, namespace));
       } else {
-        expect(keyFromString(input, project, namespace)).toEqual(expected);
+        assert.equal(keyFromString(input, project, namespace), expected);
       }
     });
   }
-});
+  test.run();
+})();
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -475,15 +483,17 @@ const keyToStringTests: Array<{
   },
 ];
 
-describe("keyToString", () => {
+(() => {
+  const test = suite("keyToString");
   for (const t of keyToStringTests) {
     const { input, project, namespace, expected } = t;
     test(`converts ${expected}`, () => {
       if (expected == null) {
-        expect(() => keyToString(input, project, namespace)).toThrowError();
+        assert.throws(() => keyToString(input, project, namespace));
       } else {
-        expect(keyToString(input, project, namespace)).toEqual(expected);
+        assert.equal(keyToString(input, project, namespace), expected);
       }
     });
   }
-});
+  test.run();
+})();
