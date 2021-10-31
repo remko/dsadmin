@@ -43,16 +43,7 @@ func main() {
 		log.Fatalf(("missing datastore emulator host setting"))
 	}
 
-	dev := os.Getenv("DSADMIN_DEV") != ""
-
-	var assets fs.FS
-	if dev {
-		assets = os.DirFS("public")
-	} else {
-		assets = dsadmin.WebAppAssets
-	}
-
-	f, err := assets.Open("index.html")
+	f, err := dsadmin.WebAppAssets.Open("index.html")
 	if err != nil {
 		panic(err)
 	}
@@ -75,7 +66,7 @@ func main() {
 			req.Host = *emulatorHost
 		}},
 	)
-	http.Handle("/", NewAssetFS(assets, index))
+	http.Handle("/", NewAssetFS(dsadmin.WebAppAssets, index))
 
 	log.Printf("dsadmin (project '%s') listening on http://localhost:%d", *project, *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))

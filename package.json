@@ -10,7 +10,7 @@
     "test-coverage": "jest --coverage",
     "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:8081 --data-dir=emulator-data",
     "start-build": "./build.mjs --watch",
-    "start-server": "env DSADMIN_DEV=1 go run ./cmd/dsadmin/dsadmin.go -project=dsadmin-dev",
+    "start-server": "./bin/dsadmin.js --project=dsadmin-dev",
     "initialize-dev-db": "./bin/initialize-dev-db.mjs",
     "prepare": "./build.mjs"
   },
