@@ -10,6 +10,7 @@ import fs from "fs";
 
 let watch = false;
 let test = false;
+let coverage = false;
 for (const arg of process.argv.slice(2)) {
   switch (arg) {
     case "--watch":
@@ -17,6 +18,9 @@ for (const arg of process.argv.slice(2)) {
       break;
     case "--test":
       test = true;
+      break;
+    case "--coverage":
+      coverage = true;
       break;
   }
 }
@@ -37,9 +41,10 @@ if (test) {
   const runTests = () => {
     // Slower, more convenient alternative:
     //    spawn("npm", ["exec", "mocha", ".esbuild-test"], ...
+    const testBin = "node_modules/.bin/mocha";
     child_process.spawn(
-      "node_modules/.bin/mocha",
-      [".esbuild-test/**/*.test.js"],
+      coverage ? "node_modules/.bin/nyc" : testBin,
+      (coverage ? [testBin] : []).concat([".esbuild-test/**/*.test.js"]),
       {
         stdio: "inherit",
         env: {

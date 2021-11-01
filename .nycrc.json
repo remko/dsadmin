@@ -1,0 +1,7 @@
+{
+  "all": true,
+  "reporter": ["text", "html"],
+  "include": [".esbuild-test/**"],
+  "exclude": [],
+  "excludeAfterRemap": false
+}

@@ -8,3 +8,4 @@ bin/dsadmin
 bin/dsadmin-*
 coverage/
 /.esbuild-test
+/.nyc_output
