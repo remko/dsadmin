@@ -36,15 +36,18 @@ const buildOptions = {
 if (test) {
   const runTests = () => {
     // Slower, more convenient alternative:
-    //    spawn("npm", ["exec", "uvu", ".esbuild-test"], ...
-    child_process.spawn("node_modules/.bin/uvu", [".esbuild-test"], {
-      stdio: "inherit",
-    });
-    // console.log("BOO", r);
-    // r.stdout.on("data", () => {
-    //   console.log("DATA");
-    // });
-    // // execArgv: ["--enable-source-maps"],
+    //    spawn("npm", ["exec", "mocha", ".esbuild-test"], ...
+    child_process.spawn(
+      "node_modules/.bin/mocha",
+      [".esbuild-test/**/*.test.js"],
+      {
+        stdio: "inherit",
+        env: {
+          ...process.env,
+          NODE_OPTIONS: "--enable-source-maps",
+        },
+      },
+    );
   };
   fs.rmSync(".esbuild-test", { recursive: true, force: true });
   esbuild
@@ -57,14 +60,11 @@ if (test) {
       watch: watch
         ? {
             onRebuild: (error) => {
-              if (!error) {
-                console.clear();
-                runTests();
-              }
+              if (!error) runTests();
             },
           }
         : undefined,
-      external: ["uvu", "lodash"],
+      external: ["chai", "lodash"],
     })
     .then(runTests);
 } else if (watch) {
