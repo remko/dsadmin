@@ -2,7 +2,7 @@
   "name": "dsadmin",
   "version": "0.17.0",
   "scripts": {
-    "start": "concurrently -n db,js,srv npm:start-emulator npm:start-build npm:start-server",
+    "start": "concurrently -n db,js,srv yarn:start-emulator yarn:start-build yarn:start-server",
     "build": "./build.mjs",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint": "prettier --loglevel warn --check \"src/**/*.{js,jsx,ts,tsx}\" && tsc --noEmit && eslint .",
