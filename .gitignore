@@ -9,3 +9,4 @@ bin/dsadmin-*
 coverage/
 /.esbuild-test
 /.nyc_output
+/.vscode/*.log
