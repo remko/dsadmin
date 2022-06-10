@@ -10,11 +10,11 @@ const projectID = "dsadmin-dev";
 async function call(action, body) {
   try {
     await axios.post(
-      `http://localhost:8081/v1/projects/dsadmin-dev:${action}`,
+      `http://127.0.0.1:8081/v1/projects/dsadmin-dev:${action}`,
       body,
     );
   } catch (e) {
-    console.log(e.message, e.response.data);
+    console.log(e.message, e.response != null ? e.response.data : null);
   }
 }
 
@@ -91,6 +91,18 @@ await call("commit", {
                 { stringValue: "Value 2" },
                 { integerValue: 42 },
               ],
+            },
+          },
+          entityProp: {
+            entityValue: {
+              key: {
+                partitionId: { projectId: projectID },
+                path: [{ kind: "SubInitKind", name: "m2" }],
+              },
+              properties: {
+                foo: { stringValue: "bar" },
+                baz: { integerValue: "3" },
+              },
             },
           },
         },

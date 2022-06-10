@@ -9,7 +9,7 @@
     "test": "./build.mjs --test",
     "test-watch": "./build.mjs --test --watch",
     "test-coverage": "./build.mjs --test --coverage",
-    "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=localhost:8081 --data-dir=emulator-data",
+    "start-emulator": "gcloud --project=dsadmin-dev beta emulators datastore start --host-port=127.0.0.1:8081 --data-dir=emulator-data",
     "start-build": "./build.mjs --watch",
     "start-server": "./bin/dsadmin.js --project=dsadmin-dev",
     "initialize-dev-db": "./bin/initialize-dev-db.mjs",
