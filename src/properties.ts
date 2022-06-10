@@ -102,6 +102,7 @@ export type PropertyEditValue = {
   geoPointValue: { latitude: string; longitude: string };
   arrayValue: Array<PropertyEditValue>;
   propertyValue: PropertyValue;
+  entityValue: Record<string, unknown>;
 };
 
 const EMPTY_VALUE: PropertyEditValue = Object.freeze({
@@ -111,6 +112,7 @@ const EMPTY_VALUE: PropertyEditValue = Object.freeze({
   geoPointValue: Object.freeze({ latitude: "", longitude: "" }),
   propertyValue: Object.freeze({ nullValue: null }),
   arrayValue: [],
+  entityValue: {},
 });
 
 export function parseTime(v: string) {
@@ -163,6 +165,8 @@ export function editValueToString(
           .join(", ") +
         "]"
       );
+    case ValueType.Entity:
+      return JSON.stringify(value.entityValue);
     default:
       return valueToString(value.propertyValue, project, namespace);
   }
@@ -254,6 +258,12 @@ export function valueToEditValue(
       type: ValueType.Blob,
       stringValue: v.blobValue,
     };
+  } else if ("entityValue" in v) {
+    return {
+      ...baseValue,
+      type: ValueType.Entity,
+      entityValue: v.entityValue,
+    };
   }
   throw Error("unsupported value");
 }
@@ -321,6 +331,11 @@ export function valueFromEditValue(
         return {
           ...baseValue,
           booleanValue: value.booleanValue,
+        };
+      case ValueType.Entity:
+        return {
+          ...baseValue,
+          entityValue: value.entityValue,
         };
       case ValueType.GeoPoint: {
         const latitude = parseDouble(value.geoPointValue.latitude);

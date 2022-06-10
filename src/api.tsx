@@ -57,6 +57,10 @@ export type BlobValue = {
   blobValue: string;
 };
 
+export type EntityValue = {
+  entityValue: Record<string, unknown>;
+};
+
 export type GeoPointValue = {
   geoPointValue: {
     latitude?: number;
@@ -78,6 +82,7 @@ export type PropertyValue = {
   | BlobValue
   | GeoPointValue
   | ArrayValue
+  | EntityValue
 );
 
 export type Entity = {

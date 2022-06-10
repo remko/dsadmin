@@ -68,6 +68,18 @@ const editValueRoundTripTests: PropertyValue[] = [
       path: [{ kind: "Kind", name: "Entity" }],
     },
   },
+  {
+    entityValue: {
+      key: {
+        partitionId: { projectId: "project" },
+        path: [{ kind: "SubInitKind", name: "m2" }],
+      },
+      properties: {
+        foo: { stringValue: "bar" },
+        baz: { integerValue: "3" },
+      },
+    },
+  },
 ];
 
 describe("value(To|From)EditValue", () => {

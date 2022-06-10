@@ -543,11 +543,7 @@ export default function PropertyValueEdit({
           <option value={ValueType.GeoPoint}>GeoPoint</option>
           <option value={ValueType.Array}>Array</option>
           <option value={ValueType.Blob}>Blob</option>
-          {value.type === ValueType.Entity ? (
-            <option disabled={true} value={ValueType.Entity}>
-              Entity
-            </option>
-          ) : null}
+          <option value={ValueType.Entity}>Entity</option>
         </select>
       </div>
       {(() => {
