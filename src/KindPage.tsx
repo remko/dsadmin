@@ -113,37 +113,52 @@ function KindTable({
       } else {
         nq.sort = sort.property;
       }
-      setLocation(`/kinds/${kind}` + qs.stringify(nq, true));
+      setLocation(
+        namespacedLocation(
+          `/kinds/${kind}` + qs.stringify(nq, true),
+          namespace,
+        ),
+      );
     },
-    [kind, q, setLocation],
+    [kind, namespace, q, setLocation],
   );
 
   const onPrevious = React.useCallback(() => {
     setLocation(
-      `/kinds/${kind}` +
-        updateQuery(window.location.search, {
-          page: page > 1 ? page - 1 : undefined,
-        }),
+      namespacedLocation(
+        `/kinds/${kind}` +
+          updateQuery(window.location.search, {
+            page: page > 1 ? page - 1 : undefined,
+          }),
+        namespace,
+      ),
     );
-  }, [kind, page, setLocation]);
+  }, [kind, namespace, page, setLocation]);
 
   const onNext = React.useCallback(() => {
     setLocation(
-      `/kinds/${kind}` +
-        updateQuery(window.location.search, { page: page + 1 }),
+      namespacedLocation(
+        `/kinds/${kind}` +
+          updateQuery(window.location.search, { page: page + 1 }),
+        namespace,
+      ),
     );
-  }, [kind, page, setLocation]);
+  }, [kind, namespace, page, setLocation]);
 
   const onChangePageSize = React.useCallback(
     (v: number) => {
       setLocation(
-        `/kinds/${kind}` + updateQuery(window.location.search, { pageSize: v }),
+        namespacedLocation(
+          `/kinds/${kind}` +
+            updateQuery(window.location.search, { pageSize: v }),
+          namespace,
+        ),
         {
           replace: true,
         },
       );
     },
-    [kind, setLocation],
+    [kind, namespace, setLocation],
   );
 
   if (data == null) {
