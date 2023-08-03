@@ -126,12 +126,12 @@ start the backend server and the build server separately:
   
     eval $(gcloud beta emulators datastore env-init --data-dir=DATA-DIR)
     ./bin/dsadmin.js
-    npm start-build
+    npm run start-build
 
 or using command-line arguments:
 
     ./bin/dsadmin.js --project=my-datastore-project --datastore-emulator-host=localhost:8081
-    npm start-build
+    npm run start-build
 
 ## 🔋 Powered by ...
 
