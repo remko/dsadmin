@@ -160,7 +160,7 @@ function EntitiesTable({
                   {p}
                 </Header>
               ),
-              id: p,
+              id: `property:${p}`,
               accessor: ({ properties }: Entity) => (properties ?? {})[p],
               Cell: ({ value }: { value?: PropertyValue }) => {
                 return value == null ? (

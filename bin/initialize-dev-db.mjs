@@ -287,6 +287,27 @@ await call("commit", {
           partitionId: {
             projectId: projectID,
           },
+          path: [{ kind: "KindWithKeyProperty", name: "Entity" }],
+        },
+        properties: {
+          key: {
+            integerValue: 14,
+          },
+        },
+      },
+    },
+  ],
+});
+
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
           path: [{ kind: "Kind", name: "EntityWithExternalKeyLink" }],
         },
         properties: {
