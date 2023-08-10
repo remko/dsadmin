@@ -31,7 +31,7 @@ function DatastoreAdminView({ project }: { project: string }) {
   const onImport = React.useCallback(
     async (ev) => {
       ev.preventDefault();
-      const inputPath = prompt("Enter the path to the export");
+      const inputPath = prompt("Enter the path to the import");
       if (!inputPath || inputPath == "") {
         return;
       }
