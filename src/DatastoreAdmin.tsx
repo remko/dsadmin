@@ -181,14 +181,14 @@ const queryClient = new QueryClient({
   },
 });
 
-function DatastoreAdmin({ project }: { project: string }) {
+function DatastoreAdmin({ project, base }: { project: string; base: string }) {
   if (project == null) {
     return <ErrorMessage error="missing project" />;
   }
   return (
     <QueryClientProvider client={queryClient}>
       <APIProvider project={project}>
-        <Router matcher={routeMatcher}>
+        <Router base={base} matcher={routeMatcher}>
           <DatastoreAdminView project={project} />
         </Router>
         <ReactQueryDevtools position="bottom-right" />

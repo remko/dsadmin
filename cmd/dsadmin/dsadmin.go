@@ -6,8 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -30,6 +30,7 @@ func NewAssetFS(root fs.FS, fallback []byte) http.Handler {
 func main() {
 	project := flag.String("project", os.Getenv("DATASTORE_PROJECT_ID"), "Datastore project ID. Defaults to DATASTORE_PROJECT_ID environment variable.")
 	port := flag.Uint("port", 8080, "Port to listen on")
+	basePath := flag.String("base-path", "", "Base HTTP path to serve the interface on")
 	defaultEmulatorHost := os.Getenv("DATASTORE_EMULATOR_HOST")
 	if defaultEmulatorHost == "" {
 		defaultEmulatorHost = "localhost:8081"
@@ -47,27 +48,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	index, err := ioutil.ReadAll(f)
+	index, err := io.ReadAll(f)
 	if err != nil {
 		panic(err)
 	}
 	dsadminEnv, err := json.Marshal(map[string]interface{}{
 		"DATASTORE_PROJECT_ID": project,
+		"BASE_PATH":            basePath,
 	})
 	if err != nil {
 		panic(err)
 	}
 	index = bytes.Replace(index, []byte("<body>"), []byte(fmt.Sprintf("<body><script>DSADMIN_ENV = JSON.parse(\"%s\");</script>", template.JSEscapeString(string(dsadminEnv)))), 1)
+	index = bytes.Replace(index, []byte("{{BASE}}"), []byte(*basePath), -1)
 
-	http.Handle("/v1/", &httputil.ReverseProxy{
+	http.Handle(*basePath+"/v1/", http.StripPrefix(*basePath, &httputil.ReverseProxy{
 		Director: func(req *http.Request) {
 			req.URL.Scheme = "http"
 			req.URL.Host = *emulatorHost
 			req.Host = *emulatorHost
 		}},
-	)
-	http.Handle("/", NewAssetFS(dsadmin.WebAppAssets, index))
+	))
+	http.Handle(*basePath+"/", http.StripPrefix(*basePath, NewAssetFS(dsadmin.WebAppAssets, index)))
 
-	log.Printf("dsadmin (project '%s') listening on http://localhost:%d", *project, *port)
+	log.Printf("dsadmin (project '%s') listening on http://localhost:%d%s", *project, *port, *basePath)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }

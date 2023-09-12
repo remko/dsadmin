@@ -114,12 +114,14 @@ export function useProject() {
 // https://cloud.google.com/datastore/docs/reference/data/rest
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+const basePath = (window as any).DSADMIN_ENV.BASE_PATH as string;
+
 async function callAPI<REQUEST_TYPE, RESPONSE_TYPE>(
   project: string,
   method: string,
   request: REQUEST_TYPE,
 ) {
-  const r = await fetch(`/v1/projects/${project}:${method}`, {
+  const r = await fetch(`${basePath}/v1/projects/${project}:${method}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

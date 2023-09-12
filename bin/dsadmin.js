@@ -29,6 +29,11 @@ const args = yargs(process.argv)
       "Datastore emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST environment variable.",
     demandOption: true,
   })
+  .option("base-path", {
+    type: "string",
+    default: "",
+    description: "Base HTTP path to serve the interface on",
+  })
   .option("port", {
     type: "number",
     default: 8080,
@@ -42,8 +47,11 @@ if (emulatorHost.length != 2) {
 }
 emulatorHost[1] = parseInt(emulatorHost[1], 10);
 
+const basePath = args.basePath;
+
 const dsadminEnv = {
   DATASTORE_PROJECT_ID: args.project,
+  BASE_PATH: basePath,
 };
 
 const index = fs
@@ -54,7 +62,8 @@ const index = fs
     `<body><script>DSADMIN_ENV = ${jsesc(dsadminEnv, {
       isScriptContext: true,
     })}</script>`,
-  );
+  )
+  .replaceAll("{{BASE}}", basePath);
 
 function serveIndex(req, res) {
   res.writeHead(200);
@@ -64,10 +73,16 @@ function serveIndex(req, res) {
 var file = new static.Server(publicDir);
 
 console.log(
-  `dsadmin (project ${args.project}) listening on http://localhost:${args.port}`,
+  `dsadmin (project ${args.project}) listening on http://localhost:${args.port}${basePath}`,
 );
 http
   .createServer(function (req, res) {
+    if (!req.url.startsWith(basePath)) {
+      res.writeHead(400);
+      res.end("not found");
+      return;
+    }
+    req.url = req.url.substring(basePath.length);
     if (req.url.startsWith("/v1/")) {
       proxy.web(req, res, {
         hostname: emulatorHost[0],
