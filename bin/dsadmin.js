@@ -31,8 +31,9 @@ const args = yargs(process.argv)
   })
   .option("base-path", {
     type: "string",
-    default: "",
-    description: "Base HTTP path to serve the interface on",
+    default: process.env.DATASTORE_BASEPATH || "",
+    description:
+      "Base HTTP path to serve the interface on. Defaults to DATASTORE_BASEPATH environment variable.",
   })
   .option("port", {
     type: "number",
