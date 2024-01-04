@@ -446,6 +446,27 @@ await call("commit", {
   ],
 });
 
+await call("commit", {
+  mode: "NON_TRANSACTIONAL",
+  mutations: [
+    {
+      insert: {
+        key: {
+          partitionId: {
+            projectId: projectID,
+          },
+          path: [{ kind: "Slash/Kind", name: "EntityWithSingleProperty" }],
+        },
+        properties: {
+          integerProp: {
+            integerValue: 14,
+          },
+        },
+      },
+    },
+  ],
+});
+
 for (let i = 0; i < 1000; i++) {
   await call("commit", {
     mode: "NON_TRANSACTIONAL",
