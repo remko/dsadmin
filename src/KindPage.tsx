@@ -29,7 +29,12 @@ function KindSelector({
 
   const onLocationChange = React.useCallback(
     (ev) => {
-      setLocation(namespacedLocation(`/kinds/${ev.target.value}`, namespace));
+      setLocation(
+        namespacedLocation(
+          `/kinds/${encodeURIComponent(ev.target.value)}`,
+          namespace,
+        ),
+      );
     },
     [namespace, setLocation],
   );
@@ -115,7 +120,7 @@ function KindTable({
       }
       setLocation(
         namespacedLocation(
-          `/kinds/${kind}` + qs.stringify(nq, true),
+          `/kinds/${encodeURIComponent(kind)}` + qs.stringify(nq, true),
           namespace,
         ),
       );
@@ -126,7 +131,7 @@ function KindTable({
   const onPrevious = React.useCallback(() => {
     setLocation(
       namespacedLocation(
-        `/kinds/${kind}` +
+        `/kinds/${encodeURIComponent(kind)}` +
           updateQuery(window.location.search, {
             page: page > 1 ? page - 1 : undefined,
           }),
@@ -138,7 +143,7 @@ function KindTable({
   const onNext = React.useCallback(() => {
     setLocation(
       namespacedLocation(
-        `/kinds/${kind}` +
+        `/kinds/${encodeURIComponent(kind)}` +
           updateQuery(window.location.search, { page: page + 1 }),
         namespace,
       ),
@@ -149,7 +154,7 @@ function KindTable({
     (v: number) => {
       setLocation(
         namespacedLocation(
-          `/kinds/${kind}` +
+          `/kinds/${encodeURIComponent(kind)}` +
             updateQuery(window.location.search, { pageSize: v }),
           namespace,
         ),
@@ -209,7 +214,8 @@ function KindPage({
     setCreateEntityDialogIsOpen(false);
   }, []);
 
-  useDocumentTitle(kind);
+  const decodedKind = decodeURIComponent(kind);
+  useDocumentTitle(decodedKind);
 
   const [, setLocation] = useLocation();
 
@@ -232,7 +238,7 @@ function KindPage({
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center">
-        <KindSelector value={kind} namespace={namespace} />
+        <KindSelector value={decodedKind} namespace={namespace} />
         <button
           className="btn btn-sm btn-outline-secondary"
           onClick={openCreateEntityDialog}
@@ -242,7 +248,7 @@ function KindPage({
       </div>
       {error != null ? <ErrorMessage error={error} /> : null}
       <KindTable
-        kind={kind}
+        kind={decodedKind}
         namespace={namespace}
         page={page}
         pageSize={pageSize}
@@ -252,7 +258,7 @@ function KindPage({
           isOpen={true}
           onRequestClose={closeCreateEntityDialog}
           onCreate={addEntity}
-          initialKind={kind}
+          initialKind={decodedKind}
           initialNamespace={namespace}
         />
       ) : null}
