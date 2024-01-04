@@ -214,8 +214,7 @@ function KindPage({
     setCreateEntityDialogIsOpen(false);
   }, []);
 
-  const decodedKind = decodeURIComponent(kind);
-  useDocumentTitle(decodedKind);
+  useDocumentTitle(kind);
 
   const [, setLocation] = useLocation();
 
@@ -238,7 +237,7 @@ function KindPage({
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center">
-        <KindSelector value={decodedKind} namespace={namespace} />
+        <KindSelector value={kind} namespace={namespace} />
         <button
           className="btn btn-sm btn-outline-secondary"
           onClick={openCreateEntityDialog}
@@ -248,7 +247,7 @@ function KindPage({
       </div>
       {error != null ? <ErrorMessage error={error} /> : null}
       <KindTable
-        kind={decodedKind}
+        kind={kind}
         namespace={namespace}
         page={page}
         pageSize={pageSize}
@@ -258,7 +257,7 @@ function KindPage({
           isOpen={true}
           onRequestClose={closeCreateEntityDialog}
           onCreate={addEntity}
-          initialKind={decodedKind}
+          initialKind={kind}
           initialNamespace={namespace}
         />
       ) : null}

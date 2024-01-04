@@ -138,9 +138,10 @@ function DatastoreAdminView({ project }: { project: string }) {
               const { page, pageSize } = qs.parse(
                 window.location.search,
               ) as Record<string, string>;
+              const decodedKind = decodeURIComponent(kind);
               return (
                 <KindPage
-                  kind={kind}
+                  kind={decodedKind}
                   page={page == null ? 0 : parseInt(page, 10) || 0}
                   pageSize={
                     pageSize == null ? 50 : parseInt(pageSize, 10) || 50
