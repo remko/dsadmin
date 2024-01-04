@@ -202,7 +202,10 @@ export default function EntityPage({
       <ol className="breadcrumb">
         <li className="breadcrumb-item">
           <Link
-            href={namespacedLocation(`/kinds/${lkey.kind}`, keyNamespace(key))}
+            href={namespacedLocation(
+              `/kinds/${encodeURIComponent(lkey.kind)}`,
+              keyNamespace(key),
+            )}
           >
             {lkey.kind}
           </Link>

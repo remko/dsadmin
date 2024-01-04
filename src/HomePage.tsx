@@ -16,9 +16,12 @@ export default function HomePage({ namespace }: { namespace: string | null }) {
     if (kinds == null || kinds.length === 0) {
       return;
     }
-    setLocation(namespacedLocation(`/kinds/${kinds[0]}`, namespace), {
-      replace: true,
-    });
+    setLocation(
+      namespacedLocation(`/kinds/${encodeURIComponent(kinds[0])}`, namespace),
+      {
+        replace: true,
+      },
+    );
   }, [kinds, namespace, setLocation]);
 
   // When we have an empty page, try to find a namespace that has kinds
