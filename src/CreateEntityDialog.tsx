@@ -45,6 +45,7 @@ export default function CreateEntityDialog(
   const [kind, setKind] = React.useState(initialKind);
   const [namespace, setNamespace] = React.useState(initialNamespace || "");
   const [keyName, setKeyName] = React.useState("");
+  const [keyID, setKeyID] = React.useState("");
   const [parentKey, setParentKey] = React.useState("");
 
   const { data: namespaces } = useNamespaces();
@@ -132,7 +133,7 @@ export default function CreateEntityDialog(
         if (keyType == KeyType.Name) {
           key.path.push({ kind, name: keyName });
         } else {
-          key.path.push({ kind });
+          key.path.push({ kind, ...(keyID.length === 0 ? {} : { id: keyID }) });
         }
         entity = {
           key,
@@ -213,13 +214,13 @@ export default function CreateEntityDialog(
         <Select value={kind} values={kinds || []} onChange={setKind} />
       </div>
       <div className="mb-3">
-        <label className="form-label">Key identifier</label>
+        <label className="form-label">Key type</label>
         <select
           className="form-select"
           value={keyType}
           onChange={(ev) => setKeyType(parseInt(ev.target.value))}
         >
-          <option value={KeyType.ID}>Numeric ID (auto-generated)</option>
+          <option value={KeyType.ID}>Numeric ID</option>
           <option value={KeyType.Name}>Name</option>
         </select>
       </div>
@@ -231,6 +232,17 @@ export default function CreateEntityDialog(
             className="form-control"
             value={keyName}
             onChange={(ev) => setKeyName(ev.target.value)}
+          />
+        </div>
+      ) : keyType === KeyType.ID ? (
+        <div className="mb-3">
+          <label className="form-label">Key ID</label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Auto-generated"
+            value={keyID}
+            onChange={(ev) => setKeyID(ev.target.value)}
           />
         </div>
       ) : null}

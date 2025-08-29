@@ -146,6 +146,10 @@ async function commit(project: string, req: any) {
   return callAPI<any, any>(project, "commit", req);
 }
 
+async function reserveIds(project: string, req: any) {
+  return callAPI<any, any>(project, "reserveIds", req);
+}
+
 async function import_(project: string, req: any) {
   return callAPI<any, any>(project, "import", req);
 }
@@ -338,6 +342,14 @@ export function useCreateEntity() {
   const { project } = React.useContext(APIContext)!;
   return useMutation<Entity, Error, Entity>(
     async (entity) => {
+      const p = entity.key.path[entity.key.path.length - 1];
+      if (p.id) {
+        try {
+          await reserveIds(project, { keys: [entity.key] });
+        } catch (e) {
+          throw { message: "Error reserving ID" };
+        }
+      }
       const r = await commit(project, {
         mode: "NON_TRANSACTIONAL",
         mutations: [
