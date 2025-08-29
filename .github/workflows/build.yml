@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           cache: 'yarn'
       - run: yarnpkg --pure-lockfile
       - run: yarnpkg build
@@ -29,14 +29,14 @@ jobs:
         - goos: darwin
           goarch: arm64
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 24
           cache: 'yarn'
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v5
         with:
-          go-version: '^1.16'
+          go-version: '^1.25.0'
       - run: yarnpkg --pure-lockfile
       - run: yarnpkg build
       - run: go build ./cmd/dsadmin
