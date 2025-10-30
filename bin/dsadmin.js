@@ -98,4 +98,10 @@ http
       });
     }
   })
-  .listen(args.port);
+  .listen(args.port, () => {
+    if (process.env.DSADMIN_NOTIFICATION_FD) {
+      const notificationFD = parseInt(process.env.DSADMIN_NOTIFICATION_FD, 10);
+      fs.writeSync(notificationFD, "\n");
+      fs.closeSync(notificationFD);
+    }
+  });
