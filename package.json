@@ -1,6 +1,6 @@
 {
   "name": "dsadmin",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "scripts": {
     "start": "concurrently -n db,js,srv yarn:start-emulator yarn:start-build yarn:start-server",
     "build": "./build.mjs",
