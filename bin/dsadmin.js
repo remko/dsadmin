@@ -24,10 +24,31 @@ const args = yargs(process.argv)
   })
   .option("datastore-emulator-host", {
     type: "string",
-    default: process.env.DATASTORE_EMULATOR_HOST || "127.0.0.1:8081",
+    default:
+      process.env.DATASTORE_EMULATOR_HOST ||
+      process.env.FIRESTORE_EMULATOR_HOST ||
+      "127.0.0.1:8081",
     description:
-      "Datastore emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST environment variable.",
+      "Datastore (or Firestore in Datastore mode) emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST or FIRESTORE_EMULATOR_HOST environment variable.",
     demandOption: true,
+  })
+  .option("database", {
+    type: "string",
+    default: "",
+    description:
+      "Database ID (Firestore emulator only). Defaults to the default database.",
+  })
+  .option("namespaces", {
+    type: "string",
+    default: "",
+    description:
+      "Comma-separated list of namespaces to show, for emulators that do not support listing namespaces (e.g. the Firestore emulator)",
+  })
+  .option("kinds", {
+    type: "string",
+    default: "",
+    description:
+      "Comma-separated list of kinds to show, for emulators that do not support listing kinds (e.g. the Firestore emulator). If not set, kinds are found by scanning all keys.",
   })
   .option("base-path", {
     type: "string",
@@ -51,6 +72,9 @@ const basePath = args.basePath;
 
 const dsadminEnv = {
   DATASTORE_PROJECT_ID: args.project,
+  DATASTORE_DATABASE_ID: args.database,
+  NAMESPACES: args.namespaces.split(",").filter((ns) => ns !== ""),
+  KINDS: args.kinds.split(",").filter((k) => k !== ""),
   BASE_PATH: basePath,
 };
 
@@ -73,7 +97,9 @@ function serveIndex(req, res) {
 var file = new static.Server(publicDir);
 
 console.log(
-  `dsadmin (project ${args.project}) listening on http://localhost:${args.port}${basePath}`,
+  `dsadmin (project ${args.project}${
+    args.database !== "" ? `, database ${args.database}` : ""
+  }) listening on http://localhost:${args.port}${basePath}`,
 );
 http
   .createServer(function (req, res) {

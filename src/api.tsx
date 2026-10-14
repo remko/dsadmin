@@ -114,7 +114,67 @@ export function useProject() {
 // https://cloud.google.com/datastore/docs/reference/data/rest
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const basePath = (window as any).DSADMIN_ENV.BASE_PATH as string;
+const dsadminEnv = (window as any).DSADMIN_ENV;
+const basePath = dsadminEnv.BASE_PATH as string;
+const databaseID = (dsadminEnv.DATASTORE_DATABASE_ID || "") as string;
+const configuredNamespaces = (dsadminEnv.NAMESPACES || []) as string[];
+const configuredKinds = (dsadminEnv.KINDS || []) as string[];
+
+function isPartitionID(v: unknown) {
+  return (
+    v != null &&
+    typeof v === "object" &&
+    Object.keys(v as Record<string, unknown>).every(
+      (k) => k === "projectId" || k === "namespaceId" || k === "databaseId",
+    )
+  );
+}
+
+// Sets (or, if `databaseID` is null, removes) the database ID of all partition IDs
+// (keys, queries, key properties, ...) in a request or response.
+// All partition IDs in a request need to refer to the same database, so we keep
+// database IDs out of the rest of the app, and add them only when talking to the API.
+function withDatabaseID(v: any, databaseID: string | null): any {
+  if (Array.isArray(v)) {
+    return v.map((e) => withDatabaseID(e, databaseID));
+  }
+  if (v == null || typeof v !== "object") {
+    return v;
+  }
+  const result: Record<string, any> = {};
+  for (const [k, e] of Object.entries(v)) {
+    if (k === "partitionId" && isPartitionID(e)) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { databaseId, ...partitionID } = e as Record<string, string>;
+      result[k] =
+        databaseID == null
+          ? partitionID
+          : { ...partitionID, databaseId: databaseID };
+    } else {
+      result[k] = withDatabaseID(e, databaseID);
+    }
+  }
+  return result;
+}
+
+async function responseError(r: Response): Promise<Error> {
+  try {
+    const error = (await r.json()).error;
+    if (error != null) {
+      return error;
+    }
+  } catch (e) {
+    // Not a JSON response (e.g. unknown endpoints on the Firestore emulator)
+  }
+  return {
+    message:
+      r.status === 404
+        ? "Not supported by this emulator"
+        : `${r.status} ${r.statusText}`,
+    code: r.status,
+    status: r.statusText,
+  };
+}
 
 async function callAPI<REQUEST_TYPE, RESPONSE_TYPE>(
   project: string,
@@ -126,12 +186,19 @@ async function callAPI<REQUEST_TYPE, RESPONSE_TYPE>(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(request),
+    body: JSON.stringify(
+      databaseID === ""
+        ? request
+        : { ...withDatabaseID(request, databaseID), databaseId: databaseID },
+    ),
   });
   if (!r.ok) {
-    throw (await r.json()).error;
+    throw await responseError(r);
   }
-  return r.json() as Promise<RESPONSE_TYPE>;
+  const response = await r.json();
+  return (
+    databaseID === "" ? response : withDatabaseID(response, null)
+  ) as RESPONSE_TYPE;
 }
 
 async function runQuery(project: string, query: any) {
@@ -162,6 +229,78 @@ function partitionID(namespace: string | null) {
   return namespace == null ? {} : { partitionId: { namespaceId: namespace } };
 }
 
+// The Firestore emulator (in Datastore mode) does not support metadata queries
+// (`__kind__`, `__namespace__`), and rejects them as invalid.
+function isUnsupportedMetadataQueryError(e: any) {
+  return e?.status === "INVALID_ARGUMENT";
+}
+
+// Lists kinds without metadata queries, by scanning all keys of the namespace.
+async function listKindsByScan(project: string, namespace: string | null) {
+  const kinds = new Set<string>();
+  let startCursor = null;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const r: any = await runQuery(project, {
+      ...partitionID(namespace),
+      query: {
+        projection: [{ property: { name: "__key__" } }],
+        limit: 1000,
+        ...(startCursor != null ? { startCursor } : {}),
+      },
+    });
+    const batchResults = r.batch.entityResults || [];
+    for (const e of batchResults) {
+      const kind = keyKind(e.entity.key);
+      if (!kind.startsWith("__")) {
+        kinds.add(kind);
+      }
+    }
+    if (
+      batchResults.length === 0 ||
+      (r.batch.moreResults !== "NOT_FINISHED" &&
+        r.batch.moreResults !== "MORE_RESULTS_AFTER_LIMIT")
+    ) {
+      break;
+    }
+    startCursor = r.batch.endCursor;
+  }
+  return Array.from(kinds).sort();
+}
+
+// Namespaces cannot be listed without metadata queries, so we remember the
+// namespaces the user entered.
+const rememberedNamespacesKey = "dsadmin.namespaces";
+
+function getRememberedNamespaces(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(rememberedNamespacesKey) || "[]");
+  } catch (e) {
+    return [];
+  }
+}
+
+export function useRememberNamespace() {
+  const queryClient = useQueryClient();
+  return React.useCallback(
+    (namespace: string) => {
+      try {
+        const namespaces = getRememberedNamespaces();
+        if (!namespaces.includes(namespace)) {
+          localStorage.setItem(
+            rememberedNamespacesKey,
+            JSON.stringify([...namespaces, namespace]),
+          );
+        }
+      } catch (e) {
+        // Ignore storage errors
+      }
+      queryClient.invalidateQueries(["namespaces"], { exact: true });
+    },
+    [queryClient],
+  );
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // React-Query wrappers
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,11 +308,21 @@ function partitionID(namespace: string | null) {
 export function useNamespaces() {
   const { project } = React.useContext(APIContext)!;
   return useQuery<(string | null)[], Error>("namespaces", async () => {
-    const r = await runQuery(project, {
-      query: {
-        kind: [{ name: "__namespace__" }],
-      },
-    });
+    let r;
+    try {
+      r = await runQuery(project, {
+        query: {
+          kind: [{ name: "__namespace__" }],
+        },
+      });
+    } catch (e) {
+      if (!isUnsupportedMetadataQueryError(e)) {
+        throw e;
+      }
+      return Array.from(
+        new Set([null, ...configuredNamespaces, ...getRememberedNamespaces()]),
+      );
+    }
     const namespaces = (r.batch.entityResults || []).map(
       (e: any) => e.entity.key.path[0].name || null,
     );
@@ -189,12 +338,22 @@ export function useKinds(namespace: string | null) {
   return useQuery<string[], Error>(
     ["namespaces", namespace, "kinds"],
     async () => {
-      const r = await runQuery(project, {
-        ...partitionID(namespace),
-        query: {
-          kind: [{ name: "__kind__" }],
-        },
-      });
+      let r;
+      try {
+        r = await runQuery(project, {
+          ...partitionID(namespace),
+          query: {
+            kind: [{ name: "__kind__" }],
+          },
+        });
+      } catch (e) {
+        if (!isUnsupportedMetadataQueryError(e)) {
+          throw e;
+        }
+        return configuredKinds.length > 0
+          ? configuredKinds
+          : listKindsByScan(project, namespace);
+      }
       return (r.batch.entityResults || []).map(
         (e: any) => e.entity.key.path[0].name,
       );
@@ -365,6 +524,10 @@ export function useCreateEntity() {
     },
     {
       onSuccess: (entity) => {
+        queryClient.invalidateQueries(
+          ["namespaces", keyNamespace(entity.key), "kinds"],
+          { exact: true },
+        );
         queryClient.invalidateQueries([
           "namespaces",
           keyNamespace(entity.key),
@@ -393,6 +556,10 @@ export function useDeleteEntities() {
     {
       onSuccess: (data, { keys }) => {
         for (const key of keys) {
+          queryClient.invalidateQueries(
+            ["namespaces", keyNamespace(key), "kinds"],
+            { exact: true },
+          );
           queryClient.invalidateQueries([
             "namespaces",
             keyNamespace(key),

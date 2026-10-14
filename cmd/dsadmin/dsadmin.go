@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"strings"
 
 	"github.com/remko/dsadmin"
 )
@@ -27,15 +28,31 @@ func NewAssetFS(root fs.FS, fallback []byte) http.Handler {
 	}))
 }
 
+func splitList(s string) []string {
+	result := []string{}
+	for _, e := range strings.Split(s, ",") {
+		if e != "" {
+			result = append(result, e)
+		}
+	}
+	return result
+}
+
 func main() {
 	project := flag.String("project", os.Getenv("DATASTORE_PROJECT_ID"), "Datastore project ID. Defaults to DATASTORE_PROJECT_ID environment variable.")
 	port := flag.Uint("port", 8080, "Port to listen on")
 	basePath := flag.String("base-path", "", "Base HTTP path to serve the interface on")
 	defaultEmulatorHost := os.Getenv("DATASTORE_EMULATOR_HOST")
 	if defaultEmulatorHost == "" {
+		defaultEmulatorHost = os.Getenv("FIRESTORE_EMULATOR_HOST")
+	}
+	if defaultEmulatorHost == "" {
 		defaultEmulatorHost = "localhost:8081"
 	}
-	emulatorHost := flag.String("datastore-emulator-host", defaultEmulatorHost, "Datastore emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST environment variable.")
+	emulatorHost := flag.String("datastore-emulator-host", defaultEmulatorHost, "Datastore (or Firestore in Datastore mode) emulator hostname & port. Defaults to DATASTORE_EMULATOR_HOST or FIRESTORE_EMULATOR_HOST environment variable.")
+	database := flag.String("database", "", "Database ID (Firestore emulator only). Defaults to the default database.")
+	namespacesFlag := flag.String("namespaces", "", "Comma-separated list of namespaces to show, for emulators that do not support listing namespaces (e.g. the Firestore emulator)")
+	kindsFlag := flag.String("kinds", "", "Comma-separated list of kinds to show, for emulators that do not support listing kinds (e.g. the Firestore emulator). If not set, kinds are found by scanning all keys.")
 	flag.Parse()
 	if *project == "" {
 		log.Fatalf("missing project setting")
@@ -53,8 +70,11 @@ func main() {
 		panic(err)
 	}
 	dsadminEnv, err := json.Marshal(map[string]interface{}{
-		"DATASTORE_PROJECT_ID": project,
-		"BASE_PATH":            basePath,
+		"DATASTORE_PROJECT_ID":  project,
+		"DATASTORE_DATABASE_ID": database,
+		"NAMESPACES":            splitList(*namespacesFlag),
+		"KINDS":                 splitList(*kindsFlag),
+		"BASE_PATH":             basePath,
 	})
 	if err != nil {
 		panic(err)

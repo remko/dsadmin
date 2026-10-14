@@ -4,7 +4,8 @@
 
 [![Build](https://github.com/remko/dsadmin/actions/workflows/build.yml/badge.svg)](https://github.com/remko/dsadmin/actions/workflows/build.yml)
 
-Administration GUI for the Google Cloud Datastore Emulator.
+Administration GUI for the Google Cloud Datastore Emulator, and the
+Firestore Emulator in Datastore mode.
 
 - Supports browsing, editing, creating, deleting, querying (using GQL),
   import, export, ...
@@ -74,6 +75,29 @@ Start using the environment from the emulator:
 Start using command-line arguments:
 
     ./dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:8081
+
+### Using the Firestore emulator in Datastore mode
+
+DSAdmin also works with the [Firestore emulator in Datastore
+mode](https://cloud.google.com/datastore/docs/emulator):
+
+    gcloud emulators firestore start --database-mode=datastore-mode --host-port=localhost:8081
+    npx dsadmin --project=my-datastore-project --datastore-emulator-host=localhost:8081
+
+Use `--database=my-database` to browse a named database instead of the
+default one.
+
+The Firestore emulator has a few limitations compared to the Datastore
+emulator:
+
+- It does not support listing namespaces. DSAdmin shows the default
+  namespace, and you can open other namespaces with *Other namespace…* in
+  the namespace selector, or list them upfront using
+  `--namespaces=namespace1,namespace2`.
+- It does not support listing kinds. DSAdmin finds the kinds by scanning
+  all keys in the namespace, which can be slow for large databases. To
+  avoid this, list the kinds upfront using `--kinds=Kind1,Kind2`.
+- Import and export are not supported.
 
 ### Using Docker
 

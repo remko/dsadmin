@@ -22,6 +22,11 @@ services:
       "gcloud", "--quiet", "beta", "emulators" ,"datastore", "start", 
       "--host-port=0.0.0.0:8081", "--data-dir=/opt/datastore/data"
     ]
+    # To use the Firestore emulator in Datastore mode instead:
+    # command: [
+    #   "gcloud", "--quiet", "emulators" ,"firestore", "start",
+    #   "--database-mode=datastore-mode", "--host-port=0.0.0.0:8081"
+    # ]
     environment:
       CLOUDSDK_CORE_PROJECT: dsadmin-dev
 
