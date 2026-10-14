@@ -74,15 +74,20 @@ jobs:
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm trusted publishing (OIDC)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+      # Staged publishing requires npm >= 11.15.0
+      - run: npm install -g npm@latest
       - run: yarnpkg --pure-lockfile
-      - run: yarnpkg publish --non-interactive
-        env:
-          NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      # Publish is staged; approve it on npmjs.com or with `npm stage approve dsadmin@<version>`
+      - run: npm stage publish
 
   
