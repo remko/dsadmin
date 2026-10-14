@@ -1,6 +1,6 @@
 {
   "name": "dsadmin",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "scripts": {
     "start": "concurrently -n db,js,srv yarn:start-emulator yarn:start-build yarn:start-server",
     "build": "./build.mjs",
@@ -16,7 +16,10 @@
     "initialize-dev-db": "./bin/initialize-dev-db.mjs",
     "prepare": "./build.mjs"
   },
-  "repository": "github:remko/dsadmin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remko/dsadmin.git"
+  },
   "dependencies": {
     "http2-proxy": "^5.0.53",
     "jsesc": "^3.0.2",
@@ -65,7 +68,9 @@
     "public",
     "bin/dsadmin.js"
   ],
-  "bin": "./bin/dsadmin.js",
+  "bin": {
+    "dsadmin": "bin/dsadmin.js"
+  },
   "license": "MIT",
   "keywords": [
     "google",
